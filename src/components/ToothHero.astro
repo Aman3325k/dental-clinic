@@ -1,0 +1,31 @@
+<div class="flex items-center justify-center">
+  <div class="relative">
+    <div style="
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%);
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation: pulse 3s ease-in-out infinite;
+    "></div>
+    <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" width="220" height="264" style="animation: float 3s ease-in-out infinite; display: block; position: relative; z-index: 1;">
+      <defs>
+        <style>
+          @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-14px); }
+          }
+          @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+          }
+        </style>
+      </defs>
+      <path d="M100 18 C64 18 38 44 38 74 C38 94 46 108 54 126 C61 143 64 176 69 201 C72 216 79 226 90 221 C98 217 100 206 100 200 C100 206 102 217 110 221 C121 226 128 216 131 201 C136 176 139 143 146 126 C154 108 162 94 162 74 C162 44 136 18 100 18 Z"
+        fill="white" stroke="#0EA5E9" stroke-width="3" stroke-linejoin="round"/>
+      <line x1="100" y1="168" x2="100" y2="218" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <ellipse cx="78" cy="64" rx="11" ry="20" fill="#E0F2FE" opacity="0.55" transform="rotate(-18 78 64)"/>
+      <path d="M60 90 Q100 80 140 90" fill="none" stroke="#BAE6FD" stroke-width="1.5" opacity="0.6"/>
+    </svg>
+  </div>
+</div>

@@ -1,0 +1,113 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import ToothHero from '../components/ToothHero.astro';
+---
+<BaseLayout title="Book Dental Appointments Online" description="SmileCare Dental — book appointments, view records, and manage your dental health online.">
+  <Nav />
+
+  <!-- HERO -->
+  <section class="max-w-6xl mx-auto px-4 py-16 md:py-24 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+    <div>
+      <p class="text-sm font-medium uppercase tracking-wider mb-4" style="color: #0EA5E9;">Trusted Dental Care</p>
+      <h1 style="font-family: 'DM Sans', sans-serif; font-weight: 800; font-size: clamp(2rem, 5vw, 3rem); color: #0F172A; line-height: 1.15;">
+        Healthy teeth,<br/>booked in minutes.
+      </h1>
+      <p class="mt-4 text-lg text-slate-500 max-w-md">
+        Book your next dental appointment online — no phone calls, no waiting.
+      </p>
+      <div class="flex flex-wrap gap-4 mt-8">
+        <a href="/signup" class="px-6 py-3 rounded-lg text-white font-medium transition" style="background: #0EA5E9;">
+          Book an Appointment
+        </a>
+        <a href="/contact" class="px-6 py-3 rounded-lg font-medium border border-slate-200 text-slate-700 hover:bg-slate-50 transition">
+          Learn More
+        </a>
+      </div>
+      <p class="mt-6 text-xs text-slate-400">
+        ✓ Free first consultation &nbsp;&nbsp; ✓ Same-day bookings &nbsp;&nbsp; ✓ Patient records online
+      </p>
+    </div>
+    <ToothHero />
+  </section>
+
+  <!-- STATS BAR -->
+  <section class="bg-slate-50 border-y border-slate-200 py-8">
+    <div class="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      {[
+        { number: '2,400+', label: 'Patients treated' },
+        { number: '15 yrs', label: 'Experience' },
+        { number: '98%',    label: 'Satisfaction rate' },
+        { number: '6',      label: 'Dental specialists' },
+      ].map(stat => (
+        <div>
+          <p style="font-family: 'DM Sans', sans-serif; font-weight: 800; font-size: 1.875rem; color: #0EA5E9;">{stat.number}</p>
+          <p class="text-sm text-slate-500 mt-1">{stat.label}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="max-w-6xl mx-auto px-4 py-16 md:py-24">
+    <h2 style="font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 1.875rem; color: #0F172A; text-align: center; margin-bottom: 2.5rem;">
+      What we treat
+    </h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      {[
+        { icon: '🦷', name: 'General Checkup',  desc: 'Routine exams to keep your teeth healthy.' },
+        { icon: '✨', name: 'Teeth Cleaning',    desc: 'Professional cleaning to remove plaque and tartar.' },
+        { icon: '⬜', name: 'Whitening',         desc: 'Safe whitening for a noticeably brighter smile.' },
+        { icon: '🔩', name: 'Fillings',          desc: 'Restore cavities quickly with tooth-colored fillings.' },
+        { icon: '🩺', name: 'Extraction',        desc: 'Safe removal of damaged or impacted teeth.' },
+        { icon: '💉', name: 'Root Canal',        desc: 'Relieve pain and save your natural tooth.' },
+      ].map(service => (
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition">
+          <div class="text-3xl mb-3">{service.icon}</div>
+          <h3 style="font-family: 'DM Sans', sans-serif; font-weight: 600; color: #0F172A; font-size: 1rem; margin-bottom: 0.5rem;">{service.name}</h3>
+          <p class="text-sm text-slate-500">{service.desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="bg-slate-50 border-y border-slate-200 py-16 md:py-24">
+    <div class="max-w-4xl mx-auto px-4">
+      <h2 style="font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 1.875rem; color: #0F172A; text-align: center; margin-bottom: 3rem;">
+        How to book
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {[
+          { n: '1', title: 'Create your account', desc: 'Sign up in under a minute with your email.' },
+          { n: '2', title: 'Pick a date & treatment', desc: 'Choose your preferred time and what you need.' },
+          { n: '3', title: 'We confirm your slot', desc: 'You get confirmation and your appointment is set.' },
+        ].map(step => (
+          <div class="text-center">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-4" style="background: #0EA5E9; font-family: 'DM Sans', sans-serif;">
+              {step.n}
+            </div>
+            <h3 style="font-family: 'DM Sans', sans-serif; font-weight: 600; color: #0F172A; margin-bottom: 0.5rem;">{step.title}</h3>
+            <p class="text-sm text-slate-500">{step.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <section class="max-w-4xl mx-auto px-4 py-16 md:py-24">
+    <div class="rounded-3xl p-10 md:p-14 text-center" style="background: linear-gradient(135deg, #0EA5E9, #0284C7);">
+      <h2 style="font-family: 'DM Sans', sans-serif; font-weight: 800; font-size: 1.875rem; color: white; margin-bottom: 0.75rem;">
+        Ready to book your appointment?
+      </h2>
+      <p class="text-sky-100 text-lg mb-8">It takes under 2 minutes.</p>
+      <a href="/signup" class="inline-block px-8 py-4 rounded-lg font-semibold transition" style="background: white; color: #0284C7;">
+        Book Now
+      </a>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
