@@ -1,0 +1,202 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Footer from '../components/Footer.astro';
+---
+<BaseLayout title="Your Dashboard" description="Manage your dental appointments.">
+  <div class="min-h-screen flex flex-col" style="background: #F8FAFC;">
+
+    <!-- Top Nav -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+      <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+        <a href="/" style="font-family: 'DM Sans', sans-serif; font-weight: 800; font-size: 1.25rem; color: #0EA5E9; text-decoration: none;">
+          SmileCare
+        </a>
+        <div class="flex items-center gap-4">
+          <span id="user-email" class="text-sm text-slate-500 hidden md:block"></span>
+          <button id="signout-btn" class="text-sm text-slate-500 hover:text-red-500 transition">Sign out</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main class="max-w-6xl mx-auto px-4 py-10 w-full flex-1">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+
+        <!-- Sidebar: Profile Card -->
+        <aside class="md:col-span-1">
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <div id="avatar" class="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4"
+              style="background: #E0F2FE; color: #0EA5E9; font-family: 'DM Sans', sans-serif;">
+              ?
+            </div>
+            <p id="profile-name" class="text-center font-semibold text-slate-900" style="font-family: 'DM Sans', sans-serif;">Loading...</p>
+            <p id="profile-email" class="text-center text-sm text-slate-500 mt-1"></p>
+            <hr class="my-4 border-slate-100" />
+            <div class="text-center">
+              <p class="text-xs text-slate-400 uppercase tracking-wider mb-1">Total appointments</p>
+              <p id="total-count" class="text-2xl font-bold" style="font-family: 'DM Sans', sans-serif; color: #0EA5E9;">—</p>
+            </div>
+            <div class="text-center mt-4">
+              <p class="text-xs text-slate-400 uppercase tracking-wider mb-1">Next visit</p>
+              <p id="next-visit" class="text-sm font-medium text-slate-700">—</p>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main: Appointments -->
+        <div class="md:col-span-3">
+          <div class="flex items-center justify-between mb-6">
+            <h1 style="font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 1.5rem; color: #0F172A;">
+              Your Appointments
+            </h1>
+            <a href="/book" class="px-5 py-2 rounded-lg text-white text-sm font-medium transition" style="background: #0EA5E9;">
+              + Book New
+            </a>
+          </div>
+
+          <!-- Tabs -->
+          <div class="flex gap-1 mb-6 border-b border-slate-200">
+            <button id="tab-upcoming" onclick="showTab('upcoming')"
+              class="px-4 py-2 text-sm font-medium border-b-2 transition"
+              style="border-color: #0EA5E9; color: #0EA5E9;">
+              Upcoming
+            </button>
+            <button id="tab-past" onclick="showTab('past')"
+              class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition">
+              Past
+            </button>
+          </div>
+
+          <!-- Success message -->
+          <div id="booked-msg" class="hidden mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm">
+            ✅ Appointment booked successfully! We'll confirm your slot shortly.
+          </div>
+
+          <!-- Appointment lists -->
+          <div id="upcoming-list"><p class="text-slate-400 text-sm">Loading...</p></div>
+          <div id="past-list" class="hidden"><p class="text-slate-400 text-sm">Loading...</p></div>
+          <p id="appointments-error" class="text-red-500 text-sm hidden"></p>
+        </div>
+
+      </div>
+    </main>
+
+    <Footer />
+  </div>
+</BaseLayout>
+
+<script>
+  import { supabase } from '../lib/supabase';
+
+  // Auth guard
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    window.location.href = '/login';
+  }
+
+  const user = session!.user;
+
+  // Show user info
+  const emailEl = document.getElementById('user-email');
+  const profileName = document.getElementById('profile-name');
+  const profileEmail = document.getElementById('profile-email');
+  const avatar = document.getElementById('avatar');
+
+  if (emailEl) emailEl.textContent = user.email || '';
+  if (profileEmail) profileEmail.textContent = user.email || '';
+
+  // Load patient profile
+  const { data: patient } = await supabase
+    .from('patients')
+    .select('full_name')
+    .eq('id', user.id)
+    .single();
+
+  if (patient && profileName) {
+    profileName.textContent = patient.full_name;
+    if (avatar) avatar.textContent = patient.full_name.charAt(0).toUpperCase();
+  }
+
+  // Show booked success message
+  if (window.location.search.includes('booked=true')) {
+    document.getElementById('booked-msg')?.classList.remove('hidden');
+  }
+
+  // Load appointments
+  const { data: appointments, error } = await supabase
+    .from('appointments')
+    .select('*')
+    .order('appointment_date', { ascending: true });
+
+  if (error) {
+    const errEl = document.getElementById('appointments-error');
+    if (errEl) {
+      errEl.textContent = 'Failed to load appointments.';
+      errEl.classList.remove('hidden');
+    }
+  } else {
+    const now = new Date().toISOString().split('T')[0];
+    const upcoming = appointments.filter(a => a.appointment_date >= now);
+    const past = appointments.filter(a => a.appointment_date < now);
+
+    const totalEl = document.getElementById('total-count');
+    if (totalEl) totalEl.textContent = String(appointments.length);
+
+    const nextEl = document.getElementById('next-visit');
+    if (nextEl && upcoming.length > 0) {
+      nextEl.textContent = upcoming[0].appointment_date;
+    } else if (nextEl) {
+      nextEl.textContent = 'None scheduled';
+    }
+
+    renderList('upcoming-list', upcoming);
+    renderList('past-list', past);
+  }
+
+  function renderList(id: string, items: any[]) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (items.length === 0) {
+      el.innerHTML = '<p class="text-slate-400 text-sm py-4">No appointments found. <a href="/book" class="text-sky-500 hover:underline">Book one now.</a></p>';
+      return;
+    }
+    el.innerHTML = items.map(a => `
+      <div class="bg-white border border-slate-200 rounded-xl p-4 mb-3">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="font-medium text-slate-900" style="font-family: 'DM Sans', sans-serif;">${a.treatment_type}</p>
+            <p class="text-sm text-slate-500 mt-1" style="font-family: 'JetBrains Mono', monospace;">${a.appointment_date} at ${a.appointment_time}</p>
+            ${a.notes ? `<p class="text-sm text-slate-400 italic mt-1">${a.notes}</p>` : ''}
+          </div>
+          <span class="status-${a.status} shrink-0">${a.status}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Tab switching
+  (window as any).showTab = (tab: string) => {
+    const upcoming = document.getElementById('upcoming-list');
+    const past = document.getElementById('past-list');
+    const tabUpcoming = document.getElementById('tab-upcoming');
+    const tabPast = document.getElementById('tab-past');
+
+    if (tab === 'upcoming') {
+      upcoming?.classList.remove('hidden');
+      past?.classList.add('hidden');
+      tabUpcoming!.style.cssText = 'border-color: #0EA5E9; color: #0EA5E9;';
+      tabPast!.style.cssText = 'border-color: transparent; color: #64748B;';
+    } else {
+      upcoming?.classList.add('hidden');
+      past?.classList.remove('hidden');
+      tabUpcoming!.style.cssText = 'border-color: transparent; color: #64748B;';
+      tabPast!.style.cssText = 'border-color: #0EA5E9; color: #0EA5E9;';
+    }
+  };
+
+  // Sign out
+  document.getElementById('signout-btn')?.addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/login';
+  });
+</script>
