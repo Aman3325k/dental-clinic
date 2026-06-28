@@ -26,7 +26,8 @@ Phase 2 (Scaffold): ✅ Complete — astro.config.mjs uses Tailwind v4 as Vite p
 Phase 3 (Layouts + components + home page): ✅ Complete
 Phase 4 (Login, signup, contact, 404): ✅ Complete
 Phase 5 (Patient dashboard + booking): ✅ Complete
-Phase 6 onwards: in progress
+Phase 6 (Admin dashboard): ✅ Complete
+Phase 7 onwards: in progress
 
 ## Decisions Made
 Admin = hardcoded email check (practice project)
