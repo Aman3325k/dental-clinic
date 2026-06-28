@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /book
+
+Sitemap: https://dental-clinic-aman.vercel.app/sitemap-index.xml
