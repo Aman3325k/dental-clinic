@@ -5,6 +5,7 @@ Project: dental-clinic
 Supabase URL: https://rsqwngcssozglzokequw.supabase.co
 Supabase key: sb_publishable_XkMSH4IM1_rMTMu1fcUEAg_AOJVczg3
 Hosting: Vercel
+Live URL: https://dental-clinic-iota-black.vercel.app
 GitHub: Aman3325k/dental-clinic
 Admin email: admin@dentalclinic.com
 Astro output: static
