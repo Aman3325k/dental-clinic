@@ -11,14 +11,17 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   <!-- Stats row -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
     {[
-      { id: 'stat-total',     label: 'Total' },
-      { id: 'stat-pending',   label: 'Pending' },
-      { id: 'stat-confirmed', label: 'Confirmed' },
-      { id: 'stat-today',     label: 'Today' },
+      { id: 'stat-total',     label: 'Total',     icon: '📋', color: '#6366F1' },
+      { id: 'stat-pending',   label: 'Pending',   icon: '⏳', color: '#F59E0B' },
+      { id: 'stat-confirmed', label: 'Confirmed', icon: '✅', color: '#10B981' },
+      { id: 'stat-today',     label: 'Today',     icon: '📅', color: '#0EA5E9' },
     ].map(s => (
-      <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-        <p id={s.id} style="font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 1.875rem; color: #6366F1;">—</p>
-        <p class="text-sm text-slate-500 mt-1">{s.label}</p>
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center gap-4">
+        <div class="text-3xl">{s.icon}</div>
+        <div>
+          <p id={s.id} style={`font-family: 'DM Sans', sans-serif; font-weight: 800; font-size: 2rem; color: ${s.color}; line-height: 1;`}>—</p>
+          <p class="text-xs text-slate-500 mt-1 uppercase tracking-wider font-medium">{s.label}</p>
+        </div>
       </div>
     ))}
   </div>
@@ -37,7 +40,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   <!-- Table -->
   <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
     <table class="w-full text-sm">
-      <thead style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0;">
+      <thead style="background: #F8FAFC; border-bottom: 2px solid #E2E8F0;">
         <tr>
           <th class="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Patient</th>
           <th class="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Date</th>
@@ -78,10 +81,15 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
     // Stats
     const today = new Date().toISOString().split('T')[0];
-    document.getElementById('stat-total')!.textContent = String(data.length);
-    document.getElementById('stat-pending')!.textContent = String(data.filter(a => a.status === 'pending').length);
-    document.getElementById('stat-confirmed')!.textContent = String(data.filter(a => a.status === 'confirmed').length);
-    document.getElementById('stat-today')!.textContent = String(data.filter(a => a.appointment_date === today).length);
+    const totalEl = document.getElementById('stat-total');
+    const pendingEl = document.getElementById('stat-pending');
+    const confirmedEl = document.getElementById('stat-confirmed');
+    const todayEl = document.getElementById('stat-today');
+
+    if (totalEl) totalEl.textContent = String(data.length);
+    if (pendingEl) pendingEl.textContent = String(data.filter((a: any) => a.status === 'pending').length);
+    if (confirmedEl) confirmedEl.textContent = String(data.filter((a: any) => a.status === 'confirmed').length);
+    if (todayEl) todayEl.textContent = String(data.filter((a: any) => a.appointment_date === today).length);
 
     // Table
     const tbody = document.getElementById('appointments-tbody')!;
