@@ -39,3 +39,4 @@ No git add .
 - Admin Dashboard UI polished (stats row layout and table header)
 - Phone input country code selection added to signup
 - Admin stats DOM initialization bug fixed
+- Admin patients and records pages completely redesigned
