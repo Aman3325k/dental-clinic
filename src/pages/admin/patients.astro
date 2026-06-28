@@ -3,32 +3,36 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 ---
 <AdminLayout title="Patients" activePage="patients">
 
-  <!-- Header -->
   <div class="flex items-center justify-between mb-8">
     <div>
-      <h1 style="font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 1.5rem; color: #0F172A;">Patients</h1>
-      <p class="text-sm text-slate-500 mt-1">All registered patients</p>
+      <h1 style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.375rem;color:#0F172A;margin:0;">Patients</h1>
+      <p style="font-size:0.8125rem;color:#94A3B8;margin-top:0.25rem;">All registered patient accounts</p>
     </div>
-    <div class="bg-white border border-slate-200 rounded-xl px-4 py-2 shadow-sm">
-      <p class="text-xs text-slate-400 uppercase tracking-wider">Total</p>
-      <p id="total-patients" style="font-family: 'DM Sans', sans-serif; font-weight: 800; font-size: 1.5rem; color: #6366F1;">—</p>
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <p id="total-count" style="font-size:0.8125rem;color:#94A3B8;font-family:'JetBrains Mono',monospace;"></p>
+      <div style="position:relative;">
+        <input id="search" type="text" placeholder="Search patients..."
+          style="border:1px solid #E2E8F0;border-radius:8px;padding:0.5rem 0.75rem 0.5rem 2.25rem;font-size:0.8125rem;color:#334155;background:white;outline:none;width:220px;" />
+        <span style="position:absolute;left:0.625rem;top:50%;transform:translateY(-50%);color:#94A3B8;font-size:0.875rem;">⌕</span>
+      </div>
     </div>
   </div>
 
-  <!-- Search -->
-  <div class="relative mb-6 max-w-sm">
-    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
-    <input id="search" type="text" placeholder="Search patients..."
-      class="w-full border border-slate-200 rounded-xl pl-9 pr-4 py-2.5 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 shadow-sm" />
-  </div>
-
-  <!-- Patient Cards Grid -->
-  <div id="patients-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm animate-pulse">
-      <div class="h-4 bg-slate-100 rounded mb-3 w-3/4"></div>
-      <div class="h-3 bg-slate-100 rounded mb-2 w-1/2"></div>
-      <div class="h-3 bg-slate-100 rounded w-2/3"></div>
-    </div>
+  <!-- Table -->
+  <div style="background:white;border:1px solid #E2E8F0;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden;">
+    <table style="width:100%;border-collapse:collapse;font-size:0.8125rem;">
+      <thead>
+        <tr style="border-bottom:1px solid #F1F5F9;">
+          <th style="text-align:left;padding:0.75rem 1.5rem;font-size:0.6875rem;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:0.07em;">Patient</th>
+          <th style="text-align:left;padding:0.75rem 1rem;font-size:0.6875rem;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:0.07em;">Phone</th>
+          <th style="text-align:left;padding:0.75rem 1rem;font-size:0.6875rem;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:0.07em;">Date of Birth</th>
+          <th style="text-align:left;padding:0.75rem 1.5rem;font-size:0.6875rem;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:0.07em;">Joined</th>
+        </tr>
+      </thead>
+      <tbody id="patients-tbody">
+        <tr><td colspan="4" style="padding:3rem;text-align:center;color:#94A3B8;font-size:0.8125rem;">Loading...</td></tr>
+      </tbody>
+    </table>
   </div>
 
 </AdminLayout>
@@ -45,13 +49,13 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
   const { data, error } = await supabase
     .from('patients')
-    .select('*, appointments(count)')
+    .select('*')
     .order('created_at', { ascending: false });
 
   if (!error && data) {
     allPatients = data;
-    const totalEl = document.getElementById('total-patients');
-    if (totalEl) totalEl.textContent = String(data.length);
+    const countEl = document.getElementById('total-count');
+    if (countEl) countEl.textContent = `${data.length} patients`;
     renderPatients(data);
   }
 
@@ -59,61 +63,41 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     return name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
   }
 
-  function getAvatarColor(name: string) {
-    const colors = [
-      { bg: '#EDE9FE', text: '#6D28D9' },
-      { bg: '#DBEAFE', text: '#1D4ED8' },
-      { bg: '#D1FAE5', text: '#065F46' },
-      { bg: '#FEF3C7', text: '#92400E' },
-      { bg: '#FCE7F3', text: '#9D174D' },
-      { bg: '#E0F2FE', text: '#0369A1' },
-    ];
-    const idx = name.charCodeAt(0) % colors.length;
-    return colors[idx];
-  }
+  const avatarColors = [
+    { bg: '#EDE9FE', text: '#6D28D9' },
+    { bg: '#DBEAFE', text: '#1D4ED8' },
+    { bg: '#D1FAE5', text: '#065F46' },
+    { bg: '#FEF3C7', text: '#92400E' },
+    { bg: '#FCE7F3', text: '#9D174D' },
+    { bg: '#E0F2FE', text: '#0369A1' },
+  ];
 
   function renderPatients(patients: any[]) {
-    const grid = document.getElementById('patients-grid')!;
+    const tbody = document.getElementById('patients-tbody')!;
     if (patients.length === 0) {
-      grid.innerHTML = `
-        <div class="col-span-3 text-center py-16">
-          <p class="text-4xl mb-3">👥</p>
-          <p class="text-slate-500 text-sm">No patients found.</p>
-        </div>`;
+      tbody.innerHTML = '<tr><td colspan="4" style="padding:3rem;text-align:center;color:#94A3B8;font-size:0.8125rem;">No patients found.</td></tr>';
       return;
     }
-
-    grid.innerHTML = patients.map(p => {
-      const color = getAvatarColor(p.full_name);
+    tbody.innerHTML = patients.map((p: any) => {
+      const color = avatarColors[p.full_name.charCodeAt(0) % avatarColors.length];
       const initials = getInitials(p.full_name);
-      const joined = p.created_at?.split('T')[0] || '—';
       return `
-        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
-          <div class="flex items-start gap-4 mb-4">
-            <div style="width:48px;height:48px;border-radius:50%;background:${color.bg};color:${color.text};display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1rem;flex-shrink:0;">
-              ${initials}
+        <tr style="border-bottom:1px solid #F8FAFC;transition:background 0.1s;" onmouseover="this.style.background='#FAFAFA'" onmouseout="this.style.background=''">
+          <td style="padding:0.875rem 1.5rem;">
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <div style="width:32px;height:32px;border-radius:8px;background:${color.bg};color:${color.text};display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.6875rem;flex-shrink:0;">${initials}</div>
+              <span style="font-weight:500;color:#0F172A;font-size:0.8125rem;">${p.full_name}</span>
             </div>
-            <div class="flex-1 min-w-0">
-              <p style="font-family:'DM Sans',sans-serif;font-weight:600;color:#0F172A;font-size:0.9375rem;" class="truncate">${p.full_name}</p>
-              <p class="text-xs text-slate-400 mt-0.5">Joined ${joined}</p>
-            </div>
-          </div>
-          <div class="space-y-2 border-t border-slate-100 pt-4">
-            <div class="flex items-center gap-2">
-              <span class="text-slate-400 text-xs w-4">📞</span>
-              <span class="text-sm text-slate-600">${p.phone || 'No phone added'}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-slate-400 text-xs w-4">🎂</span>
-              <span class="text-sm text-slate-600" style="font-family:'JetBrains Mono',monospace;">${p.date_of_birth || '—'}</span>
-            </div>
-          </div>
-        </div>`;
+          </td>
+          <td style="padding:0.875rem 1rem;color:#64748B;font-size:0.8125rem;">${p.phone || '—'}</td>
+          <td style="padding:0.875rem 1rem;font-family:'JetBrains Mono',monospace;color:#64748B;font-size:0.75rem;">${p.date_of_birth || '—'}</td>
+          <td style="padding:0.875rem 1.5rem;font-family:'JetBrains Mono',monospace;color:#94A3B8;font-size:0.75rem;">${p.created_at?.split('T')[0] || '—'}</td>
+        </tr>`;
     }).join('');
   }
 
   document.getElementById('search')?.addEventListener('input', (e) => {
     const q = (e.target as HTMLInputElement).value.toLowerCase();
-    renderPatients(allPatients.filter(p => p.full_name.toLowerCase().includes(q)));
+    renderPatients(allPatients.filter((p: any) => p.full_name.toLowerCase().includes(q)));
   });
 </script>
