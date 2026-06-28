@@ -4,4 +4,4 @@ Disallow: /admin
 Disallow: /dashboard
 Disallow: /book
 
-Sitemap: https://dental-clinic-aman.vercel.app/sitemap-index.xml
+Sitemap: https://dental-clinic-iota-black.vercel.app/sitemap-index.xml

@@ -5,7 +5,7 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   output: 'static',
-  site: 'https://dental-clinic-aman.vercel.app',
+  site: 'https://dental-clinic-iota-black.vercel.app',
   integrations: [react(), sitemap()],
   vite: {
     plugins: [tailwindcss()],
