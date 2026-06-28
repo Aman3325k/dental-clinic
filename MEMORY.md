@@ -23,8 +23,9 @@ records: select only for auth.uid() = patient_id
 ## What is built
 Phase 1 (Supabase): ✅ Complete
 Phase 2 (Scaffold): ✅ Complete — astro.config.mjs uses Tailwind v4 as Vite plugin
-Phase 3: ✅ Complete
-Phase 4 onwards: in progress
+Phase 3 (Layouts + components + home page): ✅ Complete
+Phase 4 (Login, signup, contact, 404): ✅ Complete
+Phase 5 onwards: in progress
 
 ## Decisions Made
 Admin = hardcoded email check (practice project)
