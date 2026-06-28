@@ -6,6 +6,6 @@
 [x] Phase 4 — Login, signup, contact, 404
 [x] Phase 5 — Patient dashboard + booking
 [x] Phase 6 — Admin dashboard
-[ ] Phase 7 — SEO + deploy to Vercel
+[x] Phase 7 — SEO + deploy to Vercel
 [x] Phase 8 — Polish fixes
   - [x] Admin patients and records redesign
