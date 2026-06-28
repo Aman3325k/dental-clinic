@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+---
+<BaseLayout title="Page Not Found">
+  <Nav />
+  <main class="min-h-screen flex flex-col items-center justify-center text-center px-4 py-24">
+    <p style="font-family: 'DM Sans', sans-serif; font-weight: 800; font-size: 6rem; color: #E2E8F0; line-height: 1;">404</p>
+    <svg viewBox="0 0 32 32" width="48" height="48" class="my-4">
+      <path d="M16 3 C10 3 6 8 6 13 C6 17 8 20 9 23 C10 26 11 30 13 29 C14.5 28 15 25 16 25 C17 25 17.5 28 19 29 C21 30 22 26 23 23 C24 20 26 17 26 13 C26 8 22 3 16 3 Z"
+        fill="none" stroke="#0EA5E9" stroke-width="2"/>
+    </svg>
+    <h1 style="font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 1.5rem; color: #0F172A; margin-bottom: 0.75rem;">
+      Page not found
+    </h1>
+    <p class="text-slate-500 text-sm mb-8 max-w-sm">
+      The page you're looking for doesn't exist or has been moved.
+    </p>
+    <a href="/" class="px-6 py-3 rounded-lg text-white font-medium transition" style="background: #0EA5E9;">
+      Back to home
+    </a>
+  </main>
+  <Footer />
+</BaseLayout>
