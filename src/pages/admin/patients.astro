@@ -3,32 +3,32 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 ---
 <AdminLayout title="Patients" activePage="patients">
 
-  <div class="mb-8">
-    <h1 style="font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 1.5rem; color: #0F172A;">Patients</h1>
-    <p class="text-sm text-slate-500 mt-1">All registered patients</p>
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 style="font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 1.5rem; color: #0F172A;">Patients</h1>
+      <p class="text-sm text-slate-500 mt-1">All registered patients</p>
+    </div>
+    <div class="bg-white border border-slate-200 rounded-xl px-4 py-2 shadow-sm">
+      <p class="text-xs text-slate-400 uppercase tracking-wider">Total</p>
+      <p id="total-patients" style="font-family: 'DM Sans', sans-serif; font-weight: 800; font-size: 1.5rem; color: #6366F1;">—</p>
+    </div>
   </div>
 
   <!-- Search -->
-  <div class="mb-4">
-    <input id="search" type="text" placeholder="Search by name..."
-      class="border border-slate-200 rounded-lg px-4 py-2 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 w-full max-w-sm" />
+  <div class="relative mb-6 max-w-sm">
+    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+    <input id="search" type="text" placeholder="Search patients..."
+      class="w-full border border-slate-200 rounded-xl pl-9 pr-4 py-2.5 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 shadow-sm" />
   </div>
 
-  <!-- Table -->
-  <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-    <table class="w-full text-sm">
-      <thead style="background: #F8FAFC; border-bottom: 1px solid #E2E8F0;">
-        <tr>
-          <th class="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Name</th>
-          <th class="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Phone</th>
-          <th class="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Date of Birth</th>
-          <th class="text-left px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Joined</th>
-        </tr>
-      </thead>
-      <tbody id="patients-tbody">
-        <tr><td colspan="4" class="px-4 py-6 text-center text-slate-400 text-sm">Loading...</td></tr>
-      </tbody>
-    </table>
+  <!-- Patient Cards Grid -->
+  <div id="patients-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm animate-pulse">
+      <div class="h-4 bg-slate-100 rounded mb-3 w-3/4"></div>
+      <div class="h-3 bg-slate-100 rounded mb-2 w-1/2"></div>
+      <div class="h-3 bg-slate-100 rounded w-2/3"></div>
+    </div>
   </div>
 
 </AdminLayout>
@@ -45,28 +45,71 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
   const { data, error } = await supabase
     .from('patients')
-    .select('*')
+    .select('*, appointments(count)')
     .order('created_at', { ascending: false });
 
-  if (!error) {
+  if (!error && data) {
     allPatients = data;
+    const totalEl = document.getElementById('total-patients');
+    if (totalEl) totalEl.textContent = String(data.length);
     renderPatients(data);
   }
 
+  function getInitials(name: string) {
+    return name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+  }
+
+  function getAvatarColor(name: string) {
+    const colors = [
+      { bg: '#EDE9FE', text: '#6D28D9' },
+      { bg: '#DBEAFE', text: '#1D4ED8' },
+      { bg: '#D1FAE5', text: '#065F46' },
+      { bg: '#FEF3C7', text: '#92400E' },
+      { bg: '#FCE7F3', text: '#9D174D' },
+      { bg: '#E0F2FE', text: '#0369A1' },
+    ];
+    const idx = name.charCodeAt(0) % colors.length;
+    return colors[idx];
+  }
+
   function renderPatients(patients: any[]) {
-    const tbody = document.getElementById('patients-tbody')!;
+    const grid = document.getElementById('patients-grid')!;
     if (patients.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-6 text-center text-slate-400 text-sm">No patients found.</td></tr>';
+      grid.innerHTML = `
+        <div class="col-span-3 text-center py-16">
+          <p class="text-4xl mb-3">👥</p>
+          <p class="text-slate-500 text-sm">No patients found.</p>
+        </div>`;
       return;
     }
-    tbody.innerHTML = patients.map(p => `
-      <tr style="border-bottom: 1px solid #F1F5F9;">
-        <td class="px-4 py-3 font-medium text-slate-900">${p.full_name}</td>
-        <td class="px-4 py-3 text-slate-600">${p.phone || '—'}</td>
-        <td class="px-4 py-3 text-slate-600" style="font-family: 'JetBrains Mono', monospace;">${p.date_of_birth || '—'}</td>
-        <td class="px-4 py-3 text-slate-500" style="font-family: 'JetBrains Mono', monospace;">${p.created_at?.split('T')[0] || '—'}</td>
-      </tr>
-    `).join('');
+
+    grid.innerHTML = patients.map(p => {
+      const color = getAvatarColor(p.full_name);
+      const initials = getInitials(p.full_name);
+      const joined = p.created_at?.split('T')[0] || '—';
+      return `
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+          <div class="flex items-start gap-4 mb-4">
+            <div style="width:48px;height:48px;border-radius:50%;background:${color.bg};color:${color.text};display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1rem;flex-shrink:0;">
+              ${initials}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p style="font-family:'DM Sans',sans-serif;font-weight:600;color:#0F172A;font-size:0.9375rem;" class="truncate">${p.full_name}</p>
+              <p class="text-xs text-slate-400 mt-0.5">Joined ${joined}</p>
+            </div>
+          </div>
+          <div class="space-y-2 border-t border-slate-100 pt-4">
+            <div class="flex items-center gap-2">
+              <span class="text-slate-400 text-xs w-4">📞</span>
+              <span class="text-sm text-slate-600">${p.phone || 'No phone added'}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-slate-400 text-xs w-4">🎂</span>
+              <span class="text-sm text-slate-600" style="font-family:'JetBrains Mono',monospace;">${p.date_of_birth || '—'}</span>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
   }
 
   document.getElementById('search')?.addEventListener('input', (e) => {
