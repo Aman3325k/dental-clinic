@@ -4,54 +4,78 @@ interface Props {
   activePage?: string;
 }
 const { title, activePage = '' } = Astro.props;
+import '../styles/global.css';
 ---
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
   <title>{title} | Admin — SmileCare</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/src/styles/global.css" />
 </head>
-<body style="background: #F8FAFC; margin: 0;">
-  <div class="flex min-h-screen">
+<body class="bg-slate-50 m-0 text-slate-900">
+  <div class="flex min-h-screen flex-col md:flex-row">
+
+    <!-- Mobile Top Bar -->
+    <div class="md:hidden bg-slate-900 text-white p-4 flex justify-between items-center sticky top-0 z-50">
+      <div class="flex flex-col">
+        <p class="text-[0.6rem] text-slate-400 uppercase tracking-widest">Admin Panel</p>
+        <span class="font-['DM_Sans'] font-bold text-lg">SmileCare</span>
+      </div>
+      <button id="mobile-menu-btn" aria-label="Toggle menu" class="text-slate-300 hover:text-white p-2">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Sidebar Overlay (mobile) -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 z-40 hidden md:hidden"></div>
 
     <!-- Sidebar -->
-    <aside style="width: 240px; background: #0F172A; min-height: 100vh; position: fixed; left: 0; top: 0; display: flex; flex-direction: column;">
-      <div style="padding: 1.5rem; border-bottom: 1px solid #1E293B;">
-        <p style="font-size: 0.7rem; color: #64748B; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.25rem;">Admin Panel</p>
-        <p style="font-family: 'DM Sans', sans-serif; font-weight: 800; color: white; font-size: 1.25rem;">SmileCare</p>
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-slate-900 flex flex-col z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
+      
+      <div class="p-6 border-b border-slate-800 flex justify-between items-center">
+        <div>
+          <p class="text-[0.7rem] text-slate-400 uppercase tracking-widest mb-1">Admin Panel</p>
+          <p class="font-['DM_Sans'] font-extrabold text-white text-xl">SmileCare</p>
+        </div>
+        <button id="close-menu-btn" aria-label="Close menu" class="md:hidden text-slate-400 hover:text-white p-1">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
       </div>
-      <nav style="flex: 1; padding: 1rem;">
-        <a href="/admin" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; text-decoration: none; margin-bottom: 0.25rem; color: #94A3B8; transition: all 0.15s;" 
-          onmouseover="this.style.background='#1E293B'; this.style.color='white';"
-          onmouseout="this.style.background=''; this.style.color='#94A3B8';">
-          📋 Appointments
+      
+      <nav class="flex-1 p-4 flex flex-col gap-1 overflow-y-auto">
+        <a href="/admin" class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${activePage === 'appointments' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+          <span class="text-lg">📋</span> Appointments
         </a>
-        <a href="/admin/patients" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; text-decoration: none; margin-bottom: 0.25rem; color: #94A3B8; transition: all 0.15s;" 
-          onmouseover="this.style.background='#1E293B'; this.style.color='white';"
-          onmouseout="this.style.background=''; this.style.color='#94A3B8';">
-          👥 Patients
+        <a href="/admin/patients" class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${activePage === 'patients' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+          <span class="text-lg">👥</span> Patients
         </a>
-        <a href="/admin/records" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; text-decoration: none; margin-bottom: 0.25rem; color: #94A3B8; transition: all 0.15s;" 
-          onmouseover="this.style.background='#1E293B'; this.style.color='white';"
-          onmouseout="this.style.background=''; this.style.color='#94A3B8';">
-          📁 Records
+        <a href="/admin/records" class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${activePage === 'records' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+          <span class="text-lg">📁</span> Records
         </a>
       </nav>
-      <div style="padding: 1rem; border-top: 1px solid #1E293B;">
-        <button id="admin-signout" style="color: #64748B; font-size: 0.875rem; background: none; border: none; cursor: pointer; padding: 0;">
-          Sign out
+      
+      <div class="p-4 border-t border-slate-800">
+        <button id="admin-signout" class="w-full text-left text-sm text-slate-400 hover:text-white flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors">
+          <span class="text-lg">🚪</span> Sign out
         </button>
       </div>
     </aside>
 
     <!-- Main content -->
-    <main style="margin-left: 240px; flex: 1; padding: 2rem;">
+    <main class="md:ml-64 flex-1 p-4 md:p-8 w-full">
       <slot />
     </main>
 
@@ -59,10 +83,35 @@ const { title, activePage = '' } = Astro.props;
 
   <script>
     import { supabase } from '../lib/supabase';
+    
+    // Auth logic
     document.getElementById('admin-signout')?.addEventListener('click', async () => {
       await supabase.auth.signOut();
       window.location.href = '/login';
     });
+
+    // Mobile menu logic
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const closeBtn = document.getElementById('close-menu-btn');
+
+    function toggleMenu() {
+      const isClosed = sidebar?.classList.contains('-translate-x-full');
+      if (isClosed) {
+        sidebar?.classList.remove('-translate-x-full');
+        overlay?.classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // Prevent body scroll
+      } else {
+        sidebar?.classList.add('-translate-x-full');
+        overlay?.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+    }
+
+    menuBtn?.addEventListener('click', toggleMenu);
+    closeBtn?.addEventListener('click', toggleMenu);
+    overlay?.addEventListener('click', toggleMenu);
   </script>
 </body>
 </html>

@@ -4,13 +4,13 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 <AdminLayout title="Appointments" activePage="dashboard">
 
   <!-- Page header -->
-  <div class="flex items-center justify-between mb-8">
+  <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
     <div>
-      <h1 style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.375rem;color:#0F172A;margin:0;">Appointments</h1>
-      <p style="font-size:0.8125rem;color:#94A3B8;margin-top:0.25rem;">Manage and update patient appointment status</p>
+      <h1 class="font-['DM_Sans'] font-bold text-[1.375rem] text-slate-900 m-0">Appointments</h1>
+      <p class="text-[0.8125rem] text-slate-400 mt-1">Manage and update patient appointment status</p>
     </div>
-    <div style="display:flex;gap:0.75rem;align-items:center;">
-      <select id="status-filter" style="border:1px solid #E2E8F0;border-radius:8px;padding:0.5rem 0.75rem;font-size:0.8125rem;color:#334155;background:white;outline:none;cursor:pointer;">
+    <div class="flex gap-3 items-center">
+      <select id="status-filter" class="border border-slate-200 rounded-lg py-2 px-3 text-[0.8125rem] text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 cursor-pointer">
         <option value="all">All statuses</option>
         <option value="pending">Pending</option>
         <option value="confirmed">Confirmed</option>
@@ -21,53 +21,61 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   </div>
 
   <!-- Stats row -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;">
-    {[
-      { id: 'stat-total',     label: 'Total',     border: '#6366F1' },
-      { id: 'stat-pending',   label: 'Pending',   border: '#F59E0B' },
-      { id: 'stat-confirmed', label: 'Confirmed', border: '#10B981' },
-      { id: 'stat-today',     label: 'Today',     border: '#0EA5E9' },
-    ].map(s => (
-      <div style={`background:white;border:1px solid #E2E8F0;border-top:3px solid ${s.border};border-radius:12px;padding:1.25rem 1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.06);`}>
-        <p id={s.id} style="font-family:'DM Sans',sans-serif;font-weight:800;font-size:2rem;color:#0F172A;line-height:1;margin:0;">—</p>
-        <p style="font-size:0.75rem;color:#94A3B8;margin-top:0.375rem;text-transform:uppercase;letter-spacing:0.05em;font-weight:500;">{s.label}</p>
-      </div>
-    ))}
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white border border-slate-200 border-t-[3px] border-t-indigo-500 rounded-xl p-5 shadow-sm">
+      <p id="stat-total" class="font-['DM_Sans'] font-extrabold text-3xl text-slate-900 leading-none m-0">—</p>
+      <p class="text-xs text-slate-400 mt-2 uppercase tracking-wider font-medium">Total</p>
+    </div>
+    <div class="bg-white border border-slate-200 border-t-[3px] border-t-amber-500 rounded-xl p-5 shadow-sm">
+      <p id="stat-pending" class="font-['DM_Sans'] font-extrabold text-3xl text-slate-900 leading-none m-0">—</p>
+      <p class="text-xs text-slate-400 mt-2 uppercase tracking-wider font-medium">Pending</p>
+    </div>
+    <div class="bg-white border border-slate-200 border-t-[3px] border-t-emerald-500 rounded-xl p-5 shadow-sm">
+      <p id="stat-confirmed" class="font-['DM_Sans'] font-extrabold text-3xl text-slate-900 leading-none m-0">—</p>
+      <p class="text-xs text-slate-400 mt-2 uppercase tracking-wider font-medium">Confirmed</p>
+    </div>
+    <div class="bg-white border border-slate-200 border-t-[3px] border-t-sky-500 rounded-xl p-5 shadow-sm">
+      <p id="stat-today" class="font-['DM_Sans'] font-extrabold text-3xl text-slate-900 leading-none m-0">—</p>
+      <p class="text-xs text-slate-400 mt-2 uppercase tracking-wider font-medium">Today</p>
+    </div>
   </div>
 
   <!-- Filter Bar -->
-  <div style="display:flex; gap:1rem; align-items:center; margin-bottom:1.5rem;">
-    <input type="text" id="search-input" placeholder="Search by patient name..." 
-      style="flex-grow:1; border:1px solid #E2E8F0; border-radius:8px; padding:0.5rem 0.75rem; font-size:0.8125rem; color:#334155; outline:none; transition:border-color 0.2s;" />
+  <div class="flex flex-col md:flex-row gap-4 items-stretch md:items-center mb-6">
+    <div class="relative flex-1">
+      <input type="text" id="search-input" placeholder="Search by patient name..." 
+        class="w-full border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-[0.8125rem] text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-sky-500" />
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">⌕</span>
+    </div>
     
-    <div style="display:flex; gap:0.5rem; align-items:center;">
-      <button class="date-filter-btn" data-filter="all" style="background:#0EA5E9; color:white; border:1px solid #0EA5E9; border-radius:6px; padding:0.375rem 0.75rem; font-size:0.75rem; font-weight:500; cursor:pointer; transition:all 0.2s;">All</button>
-      <button class="date-filter-btn" data-filter="today" style="background:white; color:#64748B; border:1px solid #E2E8F0; border-radius:6px; padding:0.375rem 0.75rem; font-size:0.75rem; font-weight:500; cursor:pointer; transition:all 0.2s;">Today</button>
-      <button class="date-filter-btn" data-filter="week" style="background:white; color:#64748B; border:1px solid #E2E8F0; border-radius:6px; padding:0.375rem 0.75rem; font-size:0.75rem; font-weight:500; cursor:pointer; transition:all 0.2s;">This Week</button>
-      <button class="date-filter-btn" data-filter="month" style="background:white; color:#64748B; border:1px solid #E2E8F0; border-radius:6px; padding:0.375rem 0.75rem; font-size:0.75rem; font-weight:500; cursor:pointer; transition:all 0.2s;">This Month</button>
+    <div class="flex gap-2 overflow-x-auto pb-1 md:pb-0 hide-scroll">
+      <button class="date-filter-btn shrink-0 bg-sky-500 text-white border-sky-500 border rounded-lg py-1.5 px-3 text-xs font-medium transition-colors" data-filter="all">All</button>
+      <button class="date-filter-btn shrink-0 bg-white text-slate-500 border-slate-200 border rounded-lg py-1.5 px-3 text-xs font-medium transition-colors hover:bg-slate-50" data-filter="today">Today</button>
+      <button class="date-filter-btn shrink-0 bg-white text-slate-500 border-slate-200 border rounded-lg py-1.5 px-3 text-xs font-medium transition-colors hover:bg-slate-50" data-filter="week">This Week</button>
+      <button class="date-filter-btn shrink-0 bg-white text-slate-500 border-slate-200 border rounded-lg py-1.5 px-3 text-xs font-medium transition-colors hover:bg-slate-50" data-filter="month">This Month</button>
     </div>
   </div>
 
   <!-- Table -->
-  <div style="background:white;border:1px solid #E2E8F0;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden;">
-    <div style="padding:1rem 1.5rem;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between;">
-      <p style="font-size:0.8125rem;font-weight:600;color:#0F172A;">All Appointments</p>
-      <p id="row-count" style="font-size:0.75rem;color:#94A3B8;font-family:'JetBrains Mono',monospace;"></p>
+  <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+    <div class="py-4 px-6 border-b border-slate-100 flex items-center justify-between">
+      <p class="text-[0.8125rem] font-semibold text-slate-900">All Appointments</p>
+      <p id="row-count" class="text-xs text-slate-400 font-mono"></p>
     </div>
-    <div style="overflow-x:auto;">
-      <table style="width:100%;border-collapse:collapse;font-size:0.8125rem;">
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse text-[0.8125rem]">
         <thead>
-          <tr style="border-bottom:1px solid #F1F5F9;">
-            <th style="text-align:left;padding:0.75rem 1.5rem;font-size:0.6875rem;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap;">Patient</th>
-            <th style="text-align:left;padding:0.75rem 1rem;font-size:0.6875rem;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap;">Date</th>
-            <th style="text-align:left;padding:0.75rem 1rem;font-size:0.6875rem;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap;">Time</th>
-            <th style="text-align:left;padding:0.75rem 1rem;font-size:0.6875rem;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap;">Treatment</th>
-            <th style="text-align:left;padding:0.75rem 1rem;font-size:0.6875rem;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap;">Status</th>
-            <th style="text-align:left;padding:0.75rem 1.5rem;font-size:0.6875rem;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap;">Actions</th>
+          <tr class="border-b border-slate-100 bg-slate-50/50">
+            <th class="text-left py-3 px-6 text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap">Patient</th>
+            <th class="text-left py-3 px-4 text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap">Date</th>
+            <th class="text-left py-3 px-4 text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap">Time</th>
+            <th class="text-left py-3 px-4 text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap">Treatment</th>
+            <th class="text-left py-3 px-4 text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap">Status</th>
+            <th class="text-left py-3 px-6 text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap">Actions</th>
           </tr>
         </thead>
         <tbody id="appointments-tbody">
-          <tr><td colspan="6" style="padding:3rem;text-align:center;color:#94A3B8;font-size:0.8125rem;">Loading...</td></tr>
+          <tr><td colspan="6" class="p-12 text-center text-slate-400 text-[0.8125rem]">Loading...</td></tr>
         </tbody>
       </table>
     </div>
@@ -75,10 +83,20 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
 </AdminLayout>
 
+<style>
+  .hide-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
+
 <script>
   import { supabase } from '../../lib/supabase';
 
-  const ADMIN_EMAIL = 'admin@dental.com';
+  const ADMIN_EMAIL = import.meta.env.PUBLIC_ADMIN_EMAIL;
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) { window.location.href = '/login'; }
   if (session!.user.email !== ADMIN_EMAIL) { window.location.href = '/dashboard'; }
@@ -100,7 +118,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       console.error(error); 
       const tbody = document.getElementById('appointments-tbody');
       if (tbody) {
-        tbody.innerHTML = '<tr><td colspan="6" style="padding:3rem;text-align:center;color:#EF4444;font-size:0.8125rem;">Failed to load appointments. Please refresh.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="p-12 text-center text-red-500 text-[0.8125rem]">Failed to load appointments. Please refresh.</td></tr>';
       }
       return; 
     }
@@ -145,74 +163,67 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     if (pendingEl) pendingEl.textContent = String(filtered.filter((a: any) => a.status === 'pending').length);
     if (confirmedEl) confirmedEl.textContent = String(filtered.filter((a: any) => a.status === 'confirmed').length);
     if (todayEl) todayEl.textContent = String(filtered.filter((a: any) => a.appointment_date === todayStr).length);
-    if (countEl) countEl.textContent = `${filtered.length} records`;
+    if (countEl) countEl.textContent = \`\${filtered.length} records\`;
 
     const tbody = document.getElementById('appointments-tbody')!;
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="padding:3rem;text-align:center;color:#94A3B8;font-size:0.8125rem;">No appointments found.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="p-12 text-center text-slate-400 text-[0.8125rem]">No appointments found.</td></tr>';
       return;
     }
 
     const statusStyles: Record<string, string> = {
-      pending:   'background:#FEF3C7;color:#92400E;',
-      confirmed: 'background:#D1FAE5;color:#065F46;',
-      cancelled: 'background:#FEE2E2;color:#991B1B;',
-      completed: 'background:#F1F5F9;color:#475569;',
+      pending:   'bg-amber-100 text-amber-800',
+      confirmed: 'bg-emerald-100 text-emerald-800',
+      cancelled: 'bg-red-100 text-red-800',
+      completed: 'bg-slate-100 text-slate-600',
     };
 
     const rowColors: Record<string, string> = {
-      pending:   '#FFFBEB',
-      confirmed: '#F0FDF4',
-      cancelled: '#FEF2F2',
-      completed: '#F8FAFC',
-    };
-    const hoverColors: Record<string, string> = {
-      pending:   '#FEF3C7',
-      confirmed: '#DCFCE7',
-      cancelled: '#FEE2E2',
-      completed: '#F1F5F9',
+      pending:   'bg-amber-50/30 hover:bg-amber-50',
+      confirmed: 'bg-emerald-50/30 hover:bg-emerald-50',
+      cancelled: 'bg-red-50/30 hover:bg-red-50',
+      completed: 'bg-slate-50/50 hover:bg-slate-100/50',
     };
 
     tbody.innerHTML = filtered.map((a: any) => {
-      const bg = rowColors[a.status] || '#FFFFFF';
-      const hover = hoverColors[a.status] || '#FAFAFA';
+      const bg = rowColors[a.status] || 'bg-white hover:bg-slate-50';
       
       let actionsHtml = '';
       if (a.status === 'pending') {
-        actionsHtml = `
-          <button onclick="updateStatus('${a.id}','confirmed')" style="font-size:0.6875rem;border:1px solid #D1FAE5;color:#065F46;padding:0.25rem 0.625rem;border-radius:6px;background:white;cursor:pointer;font-weight:500;transition:background 0.1s;" onmouseover="this.style.background='#D1FAE5'" onmouseout="this.style.background='white'">Confirm</button>
-          <button onclick="updateStatus('${a.id}','cancelled')" style="font-size:0.6875rem;border:1px solid #FEE2E2;color:#991B1B;padding:0.25rem 0.625rem;border-radius:6px;background:white;cursor:pointer;font-weight:500;transition:background 0.1s;" onmouseover="this.style.background='#FEE2E2'" onmouseout="this.style.background='white'">Cancel</button>
-        `;
+        actionsHtml = \`
+          <button onclick="updateStatus('\${a.id}','confirmed')" class="text-[0.6875rem] border border-emerald-200 text-emerald-700 py-1 px-2.5 rounded-md bg-white hover:bg-emerald-50 font-medium transition-colors">Confirm</button>
+          <button onclick="updateStatus('\${a.id}','cancelled')" class="text-[0.6875rem] border border-red-200 text-red-700 py-1 px-2.5 rounded-md bg-white hover:bg-red-50 font-medium transition-colors">Cancel</button>
+        \`;
       } else if (a.status === 'confirmed') {
-        actionsHtml = `
-          <button onclick="updateStatus('${a.id}','completed')" style="font-size:0.6875rem;border:1px solid #E2E8F0;color:#475569;padding:0.25rem 0.625rem;border-radius:6px;background:white;cursor:pointer;font-weight:500;transition:background 0.1s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='white'">Done</button>
-          <button onclick="updateStatus('${a.id}','cancelled')" style="font-size:0.6875rem;border:1px solid #FEE2E2;color:#991B1B;padding:0.25rem 0.625rem;border-radius:6px;background:white;cursor:pointer;font-weight:500;transition:background 0.1s;" onmouseover="this.style.background='#FEE2E2'" onmouseout="this.style.background='white'">Cancel</button>
-        `;
+        actionsHtml = \`
+          <button onclick="updateStatus('\${a.id}','completed')" class="text-[0.6875rem] border border-slate-200 text-slate-600 py-1 px-2.5 rounded-md bg-white hover:bg-slate-50 font-medium transition-colors">Done</button>
+          <button onclick="updateStatus('\${a.id}','cancelled')" class="text-[0.6875rem] border border-red-200 text-red-700 py-1 px-2.5 rounded-md bg-white hover:bg-red-50 font-medium transition-colors">Cancel</button>
+        \`;
       } else if (a.status === 'cancelled') {
-        actionsHtml = `<span style="font-size:0.6875rem;color:#94A3B8;font-weight:500;">Cancelled</span>`;
+        actionsHtml = \`<span class="text-[0.6875rem] text-slate-400 font-medium">Cancelled</span>\`;
       } else if (a.status === 'completed') {
-        actionsHtml = `<span style="font-size:0.6875rem;color:#94A3B8;font-weight:500;">Completed</span>`;
+        actionsHtml = \`<span class="text-[0.6875rem] text-slate-400 font-medium">Completed</span>\`;
       }
 
-      return `
-      <tr style="border-bottom:1px solid #F8FAFC;background:${bg};transition:background 0.1s;" onmouseover="this.style.background='${hover}'" onmouseout="this.style.background='${bg}'">
-        <td style="padding:0.875rem 1.5rem;">
-          <p style="font-weight:500;color:#0F172A;font-size:0.8125rem;">${a.patients?.full_name || '—'}</p>
-          <p style="font-size:0.6875rem;color:#94A3B8;margin-top:0.125rem;">${a.patients?.phone || ''}</p>
+      return \`
+      <tr class="border-b border-slate-50 \${bg} transition-colors">
+        <td class="py-3 px-6">
+          <p class="font-medium text-slate-900 text-[0.8125rem] whitespace-nowrap">\${a.patients?.full_name || '—'}</p>
+          <p class="text-[0.6875rem] text-slate-400 mt-0.5 whitespace-nowrap">\${a.patients?.phone || ''}</p>
         </td>
-        <td style="padding:0.875rem 1rem;font-family:'JetBrains Mono',monospace;color:#334155;font-size:0.75rem;">${a.appointment_date}</td>
-        <td style="padding:0.875rem 1rem;font-family:'JetBrains Mono',monospace;color:#334155;font-size:0.75rem;">${a.appointment_time?.slice(0,5)}</td>
-        <td style="padding:0.875rem 1rem;color:#334155;font-size:0.8125rem;">${a.treatment_type}</td>
-        <td style="padding:0.875rem 1rem;">
-          <span style="${statusStyles[a.status] || ''}border-radius:6px;padding:0.25rem 0.625rem;font-size:0.6875rem;font-weight:600;text-transform:capitalize;">${a.status}</span>
+        <td class="py-3 px-4 font-mono text-slate-600 text-xs whitespace-nowrap">\${a.appointment_date}</td>
+        <td class="py-3 px-4 font-mono text-slate-600 text-xs whitespace-nowrap">\${a.appointment_time?.slice(0,5)}</td>
+        <td class="py-3 px-4 text-slate-700 text-[0.8125rem] whitespace-nowrap">\${a.treatment_type}</td>
+        <td class="py-3 px-4 whitespace-nowrap">
+          <span class="\${statusStyles[a.status] || ''} rounded-md py-1 px-2.5 text-[0.6875rem] font-semibold capitalize inline-block">\${a.status}</span>
         </td>
-        <td style="padding:0.875rem 1.5rem;">
-          <div style="display:flex;gap:0.375rem;">
-            ${actionsHtml}
+        <td class="py-3 px-6 whitespace-nowrap">
+          <div class="flex gap-2 items-center">
+            \${actionsHtml}
           </div>
         </td>
       </tr>
-      `;
+      \`;
     }).join('');
   }
 
@@ -236,13 +247,9 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       currentDateFilter = target.dataset.filter || 'all';
       
       document.querySelectorAll('.date-filter-btn').forEach(b => {
-        (b as HTMLButtonElement).style.background = 'white';
-        (b as HTMLButtonElement).style.color = '#64748B';
-        (b as HTMLButtonElement).style.borderColor = '#E2E8F0';
+        b.className = 'date-filter-btn shrink-0 bg-white text-slate-500 border-slate-200 border rounded-lg py-1.5 px-3 text-xs font-medium transition-colors hover:bg-slate-50';
       });
-      target.style.background = '#0EA5E9';
-      target.style.color = 'white';
-      target.style.borderColor = '#0EA5E9';
+      target.className = 'date-filter-btn shrink-0 bg-sky-500 text-white border-sky-500 border rounded-lg py-1.5 px-3 text-xs font-medium transition-colors';
 
       renderTable();
     });

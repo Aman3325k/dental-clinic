@@ -45,9 +45,7 @@ import Footer from '../components/Footer.astro';
       <p class="text-center text-sm text-slate-500 mt-6">
         Don't have an account? <a href="/signup" class="text-sky-500 hover:underline">Sign up</a>
       </p>
-      <p class="text-center text-xs text-slate-400 mt-3">
-        <a href="/login" class="hover:underline">Admin? Sign in here</a>
-      </p>
+
     </div>
   </main>
   <Footer />
@@ -73,6 +71,7 @@ import Footer from '../components/Footer.astro';
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
+      console.error('Login error:', error);
       errorEl.textContent = 'Incorrect email or password. Please try again.';
       errorEl.classList.remove('hidden');
       btn.disabled = false;
@@ -80,7 +79,7 @@ import Footer from '../components/Footer.astro';
       return;
     }
 
-    if (data.user?.email === 'admin@dental.com') {
+    if (data.user?.email === import.meta.env.PUBLIC_ADMIN_EMAIL) {
       window.location.href = '/admin';
     } else {
       window.location.href = '/dashboard';

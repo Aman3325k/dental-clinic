@@ -5,32 +5,32 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
   <div class="flex items-center justify-between mb-8">
     <div>
-      <h1 style="font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.375rem;color:#0F172A;margin:0;">Patients</h1>
-      <p style="font-size:0.8125rem;color:#94A3B8;margin-top:0.25rem;">All registered patient accounts</p>
+      <h1 class="font-['DM_Sans'] font-bold text-[1.375rem] text-slate-900 m-0">Patients</h1>
+      <p class="text-[0.8125rem] text-slate-400 mt-1">All registered patient accounts</p>
     </div>
-    <div style="display:flex;align-items:center;gap:1rem;">
-      <p id="total-count" style="font-size:0.8125rem;color:#94A3B8;font-family:'JetBrains Mono',monospace;"></p>
-      <div style="position:relative;">
+    <div class="flex items-center gap-4">
+      <p id="total-count" class="text-[0.8125rem] text-slate-400 font-mono"></p>
+      <div class="relative">
         <input id="search" type="text" placeholder="Search patients..."
-          style="border:1px solid #E2E8F0;border-radius:8px;padding:0.5rem 0.75rem 0.5rem 2.25rem;font-size:0.8125rem;color:#334155;background:white;outline:none;width:220px;" />
-        <span style="position:absolute;left:0.625rem;top:50%;transform:translateY(-50%);color:#94A3B8;font-size:0.875rem;">⌕</span>
+          class="border border-slate-200 rounded-lg py-2 pr-3 pl-9 text-[0.8125rem] text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 w-56" />
+        <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">⌕</span>
       </div>
     </div>
   </div>
 
   <!-- Table -->
-  <div style="background:white;border:1px solid #E2E8F0;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden;">
-    <table style="width:100%;border-collapse:collapse;font-size:0.8125rem;">
+  <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden overflow-x-auto">
+    <table class="w-full border-collapse text-[0.8125rem]">
       <thead>
-        <tr style="border-bottom:1px solid #F1F5F9;">
-          <th style="text-align:left;padding:0.75rem 1.5rem;font-size:0.6875rem;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:0.07em;">Patient</th>
-          <th style="text-align:left;padding:0.75rem 1rem;font-size:0.6875rem;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:0.07em;">Phone</th>
-          <th style="text-align:left;padding:0.75rem 1rem;font-size:0.6875rem;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:0.07em;">Date of Birth</th>
-          <th style="text-align:left;padding:0.75rem 1.5rem;font-size:0.6875rem;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:0.07em;">Joined</th>
+        <tr class="border-b border-slate-100">
+          <th class="text-left py-3 px-6 text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wider">Patient</th>
+          <th class="text-left py-3 px-4 text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wider">Phone</th>
+          <th class="text-left py-3 px-4 text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wider">Date of Birth</th>
+          <th class="text-left py-3 px-6 text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wider">Joined</th>
         </tr>
       </thead>
       <tbody id="patients-tbody">
-        <tr><td colspan="4" style="padding:3rem;text-align:center;color:#94A3B8;font-size:0.8125rem;">Loading...</td></tr>
+        <tr><td colspan="4" class="p-12 text-center text-slate-400 text-[0.8125rem]">Loading...</td></tr>
       </tbody>
     </table>
   </div>
@@ -40,7 +40,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 <script>
   import { supabase } from '../../lib/supabase';
 
-  const ADMIN_EMAIL = 'admin@dental.com';
+  const ADMIN_EMAIL = import.meta.env.PUBLIC_ADMIN_EMAIL;
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) { window.location.href = '/login'; }
   if (session!.user.email !== ADMIN_EMAIL) { window.location.href = '/dashboard'; }
@@ -52,12 +52,12 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   }
 
   const avatarColors = [
-    { bg: '#EDE9FE', text: '#6D28D9' },
-    { bg: '#DBEAFE', text: '#1D4ED8' },
-    { bg: '#D1FAE5', text: '#065F46' },
-    { bg: '#FEF3C7', text: '#92400E' },
-    { bg: '#FCE7F3', text: '#9D174D' },
-    { bg: '#E0F2FE', text: '#0369A1' },
+    { bg: 'bg-violet-100', text: 'text-violet-700' },
+    { bg: 'bg-blue-100', text: 'text-blue-700' },
+    { bg: 'bg-emerald-100', text: 'text-emerald-700' },
+    { bg: 'bg-amber-100', text: 'text-amber-700' },
+    { bg: 'bg-pink-100', text: 'text-pink-700' },
+    { bg: 'bg-sky-100', text: 'text-sky-700' },
   ];
 
   const { data, error } = await supabase
@@ -69,38 +69,36 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     console.error('Supabase fetch error:', error);
     const tbody = document.getElementById('patients-tbody');
     if (tbody) {
-      tbody.innerHTML = `<tr><td colspan="4" style="padding:3rem;text-align:center;color:#EF4444;font-size:0.8125rem;">Failed to load patients: ${error.message || 'Unknown error'}</td></tr>`;
+      tbody.innerHTML = \`<tr><td colspan="4" class="p-12 text-center text-red-500 text-[0.8125rem]">Failed to load patients: \${error.message || 'Unknown error'}</td></tr>\`;
     }
   } else if (data) {
     allPatients = data;
     const countEl = document.getElementById('total-count');
-    if (countEl) countEl.textContent = `${data.length} patients`;
+    if (countEl) countEl.textContent = \`\${data.length} patients\`;
     renderPatients(data);
   }
-
-
 
   function renderPatients(patients: any[]) {
     const tbody = document.getElementById('patients-tbody')!;
     if (patients.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" style="padding:3rem;text-align:center;color:#94A3B8;font-size:0.8125rem;">No patients found.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" class="p-12 text-center text-slate-400 text-[0.8125rem]">No patients found.</td></tr>';
       return;
     }
     tbody.innerHTML = patients.map((p: any) => {
       const color = avatarColors[p.full_name.charCodeAt(0) % avatarColors.length];
       const initials = getInitials(p.full_name);
-      return `
-        <tr style="border-bottom:1px solid #F8FAFC;transition:background 0.1s;" onmouseover="this.style.background='#FAFAFA'" onmouseout="this.style.background=''">
-          <td style="padding:0.875rem 1.5rem;">
-            <div style="display:flex;align-items:center;gap:0.75rem;">
-              <div style="width:32px;height:32px;border-radius:8px;background:${color.bg};color:${color.text};display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.6875rem;flex-shrink:0;">${initials}</div>
-              <span style="font-weight:500;color:#0F172A;font-size:0.8125rem;">${p.full_name}</span>
+      return \`
+        <tr class="border-b border-slate-50 transition-colors duration-100 hover:bg-slate-50">
+          <td class="py-3.5 px-6">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg \${color.bg} \${color.text} flex items-center justify-center font-['DM_Sans'] font-bold text-[0.6875rem] shrink-0">\${initials}</div>
+              <span class="font-medium text-slate-900 text-[0.8125rem]">\${p.full_name}</span>
             </div>
           </td>
-          <td style="padding:0.875rem 1rem;color:#64748B;font-size:0.8125rem;">${p.phone || '—'}</td>
-          <td style="padding:0.875rem 1rem;font-family:'JetBrains Mono',monospace;color:#64748B;font-size:0.75rem;">${p.date_of_birth || '—'}</td>
-          <td style="padding:0.875rem 1.5rem;font-family:'JetBrains Mono',monospace;color:#94A3B8;font-size:0.75rem;">${p.created_at?.split('T')[0] || '—'}</td>
-        </tr>`;
+          <td class="py-3.5 px-4 text-slate-500 text-[0.8125rem]">\${p.phone || '—'}</td>
+          <td class="py-3.5 px-4 font-mono text-slate-500 text-xs">\${p.date_of_birth || '—'}</td>
+          <td class="py-3.5 px-6 font-mono text-slate-400 text-xs">\${p.created_at?.split('T')[0] || '—'}</td>
+        </tr>\`;
     }).join('');
   }
 

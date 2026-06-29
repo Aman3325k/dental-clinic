@@ -6,7 +6,15 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   output: 'static',
   site: 'https://dental-clinic-iota-black.vercel.app',
-  integrations: [react(), sitemap()],
+  integrations: [
+    react(), 
+    sitemap({
+      filter: (page) => 
+        !page.includes('/admin') && 
+        !page.includes('/dashboard') && 
+        !page.includes('/book')
+    })
+  ],
   vite: {
     plugins: [tailwindcss()],
   },
