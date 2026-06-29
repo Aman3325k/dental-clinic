@@ -1,9 +1,14 @@
 ---
+// -- Run this in Supabase SQL Editor:
+// -- CREATE POLICY "Users can insert own profile"
+// -- ON patients FOR INSERT
+// -- WITH CHECK (auth.uid() = id);
+
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 ---
-<BaseLayout title="Create Account" description="Create your SmileCare patient account.">
+<BaseLayout title="Create Account" description="Create your SmileCare patient account and book dental appointments online.">
   <Nav />
   <main class="min-h-screen flex items-center justify-center py-12 px-4" style="background: #F8FAFC;">
     <div class="w-full max-w-lg bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
@@ -122,6 +127,9 @@ import Footer from '../components/Footer.astro';
       return;
     }
 
+    // Delay to ensure auth session is fully established before RLS evaluates
+    await new Promise(resolve => setTimeout(resolve, 200));
+
     const { error: profileError } = await supabase.from('patients').insert({
       id: authData.user!.id,
       full_name: fullName,
@@ -130,8 +138,12 @@ import Footer from '../components/Footer.astro';
     });
 
     if (profileError) {
-      errorEl.textContent = 'Account created but profile setup failed. Please contact support.';
+      console.error('Profile insert error:', profileError);
+      // Edge case: if patients insert fails, the auth account already exists but has no profile
+      errorEl.textContent = `Profile error: ${profileError.message}. Please try signing in — your account may already exist.`;
       errorEl.classList.remove('hidden');
+      btn.disabled = false;
+      btn.textContent = 'Create account';
       return;
     }
 
