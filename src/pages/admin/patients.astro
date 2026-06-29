@@ -47,6 +47,19 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
   let allPatients: any[] = [];
 
+  function getInitials(name: string) {
+    return name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+  }
+
+  const avatarColors = [
+    { bg: '#EDE9FE', text: '#6D28D9' },
+    { bg: '#DBEAFE', text: '#1D4ED8' },
+    { bg: '#D1FAE5', text: '#065F46' },
+    { bg: '#FEF3C7', text: '#92400E' },
+    { bg: '#FCE7F3', text: '#9D174D' },
+    { bg: '#E0F2FE', text: '#0369A1' },
+  ];
+
   const { data, error } = await supabase
     .from('patients')
     .select('*')
@@ -65,18 +78,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     renderPatients(data);
   }
 
-  function getInitials(name: string) {
-    return name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
-  }
 
-  const avatarColors = [
-    { bg: '#EDE9FE', text: '#6D28D9' },
-    { bg: '#DBEAFE', text: '#1D4ED8' },
-    { bg: '#D1FAE5', text: '#065F46' },
-    { bg: '#FEF3C7', text: '#92400E' },
-    { bg: '#FCE7F3', text: '#9D174D' },
-    { bg: '#E0F2FE', text: '#0369A1' },
-  ];
 
   function renderPatients(patients: any[]) {
     const tbody = document.getElementById('patients-tbody')!;
