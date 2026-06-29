@@ -74,7 +74,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 <script>
   import { supabase } from '../../lib/supabase';
 
-  const ADMIN_EMAIL = 'admin@dentalclinic.com';
+  const ADMIN_EMAIL = 'admin@dental.com';
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) { window.location.href = '/login'; }
   if (session!.user.email !== ADMIN_EMAIL) { window.location.href = '/dashboard'; }

@@ -78,7 +78,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 <script>
   import { supabase } from '../../lib/supabase';
 
-  const ADMIN_EMAIL = 'admin@dentalclinic.com';
+  const ADMIN_EMAIL = 'admin@dental.com';
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) { window.location.href = '/login'; }
   if (session!.user.email !== ADMIN_EMAIL) { window.location.href = '/dashboard'; }
@@ -96,7 +96,14 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     if (statusFilter !== 'all') query = query.eq('status', statusFilter);
 
     const { data, error } = await query;
-    if (error) { console.error(error); return; }
+    if (error) { 
+      console.error(error); 
+      const tbody = document.getElementById('appointments-tbody');
+      if (tbody) {
+        tbody.innerHTML = '<tr><td colspan="6" style="padding:3rem;text-align:center;color:#EF4444;font-size:0.8125rem;">Failed to load appointments. Please refresh.</td></tr>';
+      }
+      return; 
+    }
 
     allAppointments = data || [];
     renderTable();
