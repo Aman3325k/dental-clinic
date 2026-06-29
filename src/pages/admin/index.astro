@@ -176,6 +176,24 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     tbody.innerHTML = filtered.map((a: any) => {
       const bg = rowColors[a.status] || '#FFFFFF';
       const hover = hoverColors[a.status] || '#FAFAFA';
+      
+      let actionsHtml = '';
+      if (a.status === 'pending') {
+        actionsHtml = `
+          <button onclick="updateStatus('${a.id}','confirmed')" style="font-size:0.6875rem;border:1px solid #D1FAE5;color:#065F46;padding:0.25rem 0.625rem;border-radius:6px;background:white;cursor:pointer;font-weight:500;transition:background 0.1s;" onmouseover="this.style.background='#D1FAE5'" onmouseout="this.style.background='white'">Confirm</button>
+          <button onclick="updateStatus('${a.id}','cancelled')" style="font-size:0.6875rem;border:1px solid #FEE2E2;color:#991B1B;padding:0.25rem 0.625rem;border-radius:6px;background:white;cursor:pointer;font-weight:500;transition:background 0.1s;" onmouseover="this.style.background='#FEE2E2'" onmouseout="this.style.background='white'">Cancel</button>
+        `;
+      } else if (a.status === 'confirmed') {
+        actionsHtml = `
+          <button onclick="updateStatus('${a.id}','completed')" style="font-size:0.6875rem;border:1px solid #E2E8F0;color:#475569;padding:0.25rem 0.625rem;border-radius:6px;background:white;cursor:pointer;font-weight:500;transition:background 0.1s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='white'">Done</button>
+          <button onclick="updateStatus('${a.id}','cancelled')" style="font-size:0.6875rem;border:1px solid #FEE2E2;color:#991B1B;padding:0.25rem 0.625rem;border-radius:6px;background:white;cursor:pointer;font-weight:500;transition:background 0.1s;" onmouseover="this.style.background='#FEE2E2'" onmouseout="this.style.background='white'">Cancel</button>
+        `;
+      } else if (a.status === 'cancelled') {
+        actionsHtml = `<span style="font-size:0.6875rem;color:#94A3B8;font-weight:500;">Cancelled</span>`;
+      } else if (a.status === 'completed') {
+        actionsHtml = `<span style="font-size:0.6875rem;color:#94A3B8;font-weight:500;">Completed</span>`;
+      }
+
       return `
       <tr style="border-bottom:1px solid #F8FAFC;background:${bg};transition:background 0.1s;" onmouseover="this.style.background='${hover}'" onmouseout="this.style.background='${bg}'">
         <td style="padding:0.875rem 1.5rem;">
@@ -190,9 +208,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         </td>
         <td style="padding:0.875rem 1.5rem;">
           <div style="display:flex;gap:0.375rem;">
-            <button onclick="updateStatus('${a.id}','confirmed')" style="font-size:0.6875rem;border:1px solid #D1FAE5;color:#065F46;padding:0.25rem 0.625rem;border-radius:6px;background:white;cursor:pointer;font-weight:500;transition:background 0.1s;" onmouseover="this.style.background='#D1FAE5'" onmouseout="this.style.background='white'">Confirm</button>
-            <button onclick="updateStatus('${a.id}','completed')" style="font-size:0.6875rem;border:1px solid #E2E8F0;color:#475569;padding:0.25rem 0.625rem;border-radius:6px;background:white;cursor:pointer;font-weight:500;transition:background 0.1s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='white'">Done</button>
-            <button onclick="updateStatus('${a.id}','cancelled')" style="font-size:0.6875rem;border:1px solid #FEE2E2;color:#991B1B;padding:0.25rem 0.625rem;border-radius:6px;background:white;cursor:pointer;font-weight:500;transition:background 0.1s;" onmouseover="this.style.background='#FEE2E2'" onmouseout="this.style.background='white'">Cancel</button>
+            ${actionsHtml}
           </div>
         </td>
       </tr>
