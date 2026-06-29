@@ -69,12 +69,12 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     console.error('Supabase fetch error:', error);
     const tbody = document.getElementById('patients-tbody');
     if (tbody) {
-      tbody.innerHTML = \`<tr><td colspan="4" class="p-12 text-center text-red-500 text-[0.8125rem]">Failed to load patients: \${error.message || 'Unknown error'}</td></tr>\`;
+      tbody.innerHTML = `<tr><td colspan="4" class="p-12 text-center text-red-500 text-[0.8125rem]">Failed to load patients: ${error.message || 'Unknown error'}</td></tr>`;
     }
   } else if (data) {
     allPatients = data;
     const countEl = document.getElementById('total-count');
-    if (countEl) countEl.textContent = \`\${data.length} patients\`;
+    if (countEl) countEl.textContent = `${data.length} patients`;
     renderPatients(data);
   }
 
@@ -87,18 +87,18 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     tbody.innerHTML = patients.map((p: any) => {
       const color = avatarColors[p.full_name.charCodeAt(0) % avatarColors.length];
       const initials = getInitials(p.full_name);
-      return \`
+      return `
         <tr class="border-b border-slate-50 transition-colors duration-100 hover:bg-slate-50">
           <td class="py-3.5 px-6">
             <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-lg \${color.bg} \${color.text} flex items-center justify-center font-['DM_Sans'] font-bold text-[0.6875rem] shrink-0">\${initials}</div>
-              <span class="font-medium text-slate-900 text-[0.8125rem]">\${p.full_name}</span>
+              <div class="w-8 h-8 rounded-lg ${color.bg} ${color.text} flex items-center justify-center font-['DM_Sans'] font-bold text-[0.6875rem] shrink-0">${initials}</div>
+              <span class="font-medium text-slate-900 text-[0.8125rem]">${p.full_name}</span>
             </div>
           </td>
-          <td class="py-3.5 px-4 text-slate-500 text-[0.8125rem]">\${p.phone || '—'}</td>
-          <td class="py-3.5 px-4 font-mono text-slate-500 text-xs">\${p.date_of_birth || '—'}</td>
-          <td class="py-3.5 px-6 font-mono text-slate-400 text-xs">\${p.created_at?.split('T')[0] || '—'}</td>
-        </tr>\`;
+          <td class="py-3.5 px-4 text-slate-500 text-[0.8125rem]">${p.phone || '—'}</td>
+          <td class="py-3.5 px-4 font-mono text-slate-500 text-xs">${p.date_of_birth || '—'}</td>
+          <td class="py-3.5 px-6 font-mono text-slate-400 text-xs">${p.created_at?.split('T')[0] || '—'}</td>
+        </tr>`;
     }).join('');
   }
 

@@ -163,7 +163,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     if (pendingEl) pendingEl.textContent = String(filtered.filter((a: any) => a.status === 'pending').length);
     if (confirmedEl) confirmedEl.textContent = String(filtered.filter((a: any) => a.status === 'confirmed').length);
     if (todayEl) todayEl.textContent = String(filtered.filter((a: any) => a.appointment_date === todayStr).length);
-    if (countEl) countEl.textContent = \`\${filtered.length} records\`;
+    if (countEl) countEl.textContent = `${filtered.length} records`;
 
     const tbody = document.getElementById('appointments-tbody')!;
     if (filtered.length === 0) {
@@ -190,40 +190,40 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       
       let actionsHtml = '';
       if (a.status === 'pending') {
-        actionsHtml = \`
-          <button onclick="updateStatus('\${a.id}','confirmed')" class="text-[0.6875rem] border border-emerald-200 text-emerald-700 py-1 px-2.5 rounded-md bg-white hover:bg-emerald-50 font-medium transition-colors">Confirm</button>
-          <button onclick="updateStatus('\${a.id}','cancelled')" class="text-[0.6875rem] border border-red-200 text-red-700 py-1 px-2.5 rounded-md bg-white hover:bg-red-50 font-medium transition-colors">Cancel</button>
-        \`;
+        actionsHtml = `
+          <button onclick="updateStatus('${a.id}','confirmed')" class="text-[0.6875rem] border border-emerald-200 text-emerald-700 py-1 px-2.5 rounded-md bg-white hover:bg-emerald-50 font-medium transition-colors">Confirm</button>
+          <button onclick="updateStatus('${a.id}','cancelled')" class="text-[0.6875rem] border border-red-200 text-red-700 py-1 px-2.5 rounded-md bg-white hover:bg-red-50 font-medium transition-colors">Cancel</button>
+        `;
       } else if (a.status === 'confirmed') {
-        actionsHtml = \`
-          <button onclick="updateStatus('\${a.id}','completed')" class="text-[0.6875rem] border border-slate-200 text-slate-600 py-1 px-2.5 rounded-md bg-white hover:bg-slate-50 font-medium transition-colors">Done</button>
-          <button onclick="updateStatus('\${a.id}','cancelled')" class="text-[0.6875rem] border border-red-200 text-red-700 py-1 px-2.5 rounded-md bg-white hover:bg-red-50 font-medium transition-colors">Cancel</button>
-        \`;
+        actionsHtml = `
+          <button onclick="updateStatus('${a.id}','completed')" class="text-[0.6875rem] border border-slate-200 text-slate-600 py-1 px-2.5 rounded-md bg-white hover:bg-slate-50 font-medium transition-colors">Done</button>
+          <button onclick="updateStatus('${a.id}','cancelled')" class="text-[0.6875rem] border border-red-200 text-red-700 py-1 px-2.5 rounded-md bg-white hover:bg-red-50 font-medium transition-colors">Cancel</button>
+        `;
       } else if (a.status === 'cancelled') {
-        actionsHtml = \`<span class="text-[0.6875rem] text-slate-400 font-medium">Cancelled</span>\`;
+        actionsHtml = `<span class="text-[0.6875rem] text-slate-400 font-medium">Cancelled</span>`;
       } else if (a.status === 'completed') {
-        actionsHtml = \`<span class="text-[0.6875rem] text-slate-400 font-medium">Completed</span>\`;
+        actionsHtml = `<span class="text-[0.6875rem] text-slate-400 font-medium">Completed</span>`;
       }
 
-      return \`
-      <tr class="border-b border-slate-50 \${bg} transition-colors">
+      return `
+      <tr class="border-b border-slate-50 ${bg} transition-colors">
         <td class="py-3 px-6">
-          <p class="font-medium text-slate-900 text-[0.8125rem] whitespace-nowrap">\${a.patients?.full_name || '—'}</p>
-          <p class="text-[0.6875rem] text-slate-400 mt-0.5 whitespace-nowrap">\${a.patients?.phone || ''}</p>
+          <p class="font-medium text-slate-900 text-[0.8125rem] whitespace-nowrap">${a.patients?.full_name || '—'}</p>
+          <p class="text-[0.6875rem] text-slate-400 mt-0.5 whitespace-nowrap">${a.patients?.phone || ''}</p>
         </td>
-        <td class="py-3 px-4 font-mono text-slate-600 text-xs whitespace-nowrap">\${a.appointment_date}</td>
-        <td class="py-3 px-4 font-mono text-slate-600 text-xs whitespace-nowrap">\${a.appointment_time?.slice(0,5)}</td>
-        <td class="py-3 px-4 text-slate-700 text-[0.8125rem] whitespace-nowrap">\${a.treatment_type}</td>
+        <td class="py-3 px-4 font-mono text-slate-600 text-xs whitespace-nowrap">${a.appointment_date}</td>
+        <td class="py-3 px-4 font-mono text-slate-600 text-xs whitespace-nowrap">${a.appointment_time?.slice(0,5)}</td>
+        <td class="py-3 px-4 text-slate-700 text-[0.8125rem] whitespace-nowrap">${a.treatment_type}</td>
         <td class="py-3 px-4 whitespace-nowrap">
-          <span class="\${statusStyles[a.status] || ''} rounded-md py-1 px-2.5 text-[0.6875rem] font-semibold capitalize inline-block">\${a.status}</span>
+          <span class="${statusStyles[a.status] || ''} rounded-md py-1 px-2.5 text-[0.6875rem] font-semibold capitalize inline-block">${a.status}</span>
         </td>
         <td class="py-3 px-6 whitespace-nowrap">
           <div class="flex gap-2 items-center">
-            \${actionsHtml}
+            ${actionsHtml}
           </div>
         </td>
       </tr>
-      \`;
+      `;
     }).join('');
   }
 
