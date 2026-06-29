@@ -35,6 +35,19 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     ))}
   </div>
 
+  <!-- Filter Bar -->
+  <div style="display:flex; gap:1rem; align-items:center; margin-bottom:1.5rem;">
+    <input type="text" id="search-input" placeholder="Search by patient name..." 
+      style="flex-grow:1; border:1px solid #E2E8F0; border-radius:8px; padding:0.5rem 0.75rem; font-size:0.8125rem; color:#334155; outline:none; transition:border-color 0.2s;" />
+    
+    <div style="display:flex; gap:0.5rem; align-items:center;">
+      <button class="date-filter-btn" data-filter="all" style="background:#0EA5E9; color:white; border:1px solid #0EA5E9; border-radius:6px; padding:0.375rem 0.75rem; font-size:0.75rem; font-weight:500; cursor:pointer; transition:all 0.2s;">All</button>
+      <button class="date-filter-btn" data-filter="today" style="background:white; color:#64748B; border:1px solid #E2E8F0; border-radius:6px; padding:0.375rem 0.75rem; font-size:0.75rem; font-weight:500; cursor:pointer; transition:all 0.2s;">Today</button>
+      <button class="date-filter-btn" data-filter="week" style="background:white; color:#64748B; border:1px solid #E2E8F0; border-radius:6px; padding:0.375rem 0.75rem; font-size:0.75rem; font-weight:500; cursor:pointer; transition:all 0.2s;">This Week</button>
+      <button class="date-filter-btn" data-filter="month" style="background:white; color:#64748B; border:1px solid #E2E8F0; border-radius:6px; padding:0.375rem 0.75rem; font-size:0.75rem; font-weight:500; cursor:pointer; transition:all 0.2s;">This Month</button>
+    </div>
+  </div>
+
   <!-- Table -->
   <div style="background:white;border:1px solid #E2E8F0;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden;">
     <div style="padding:1rem 1.5rem;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between;">
@@ -70,6 +83,10 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   if (!session) { window.location.href = '/login'; }
   if (session!.user.email !== ADMIN_EMAIL) { window.location.href = '/dashboard'; }
 
+  let allAppointments: any[] = [];
+  let currentSearchTerm = '';
+  let currentDateFilter = 'all';
+
   async function loadAppointments(statusFilter = 'all') {
     let query = supabase
       .from('appointments')
@@ -81,7 +98,35 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     const { data, error } = await query;
     if (error) { console.error(error); return; }
 
-    const today = new Date().toISOString().split('T')[0];
+    allAppointments = data || [];
+    renderTable();
+  }
+
+  function renderTable() {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const today = new Date(todayStr);
+
+    const filtered = allAppointments.filter(a => {
+      // 1. Search Filter
+      const nameMatch = a.patients?.full_name?.toLowerCase().includes(currentSearchTerm.toLowerCase());
+      if (currentSearchTerm && !nameMatch) return false;
+
+      // 2. Date Filter
+      if (currentDateFilter === 'today') {
+        return a.appointment_date === todayStr;
+      } else if (currentDateFilter === 'week') {
+        const appDate = new Date(a.appointment_date);
+        const dayOfWeek = today.getDay(); // 0 is Sunday
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - dayOfWeek);
+        const endOfWeek = new Date(today);
+        endOfWeek.setDate(today.getDate() + (6 - dayOfWeek));
+        return appDate >= startOfWeek && appDate <= endOfWeek;
+      } else if (currentDateFilter === 'month') {
+        return a.appointment_date.startsWith(todayStr.slice(0, 7)); // e.g. "2023-10"
+      }
+      return true;
+    });
 
     const totalEl = document.getElementById('stat-total');
     const pendingEl = document.getElementById('stat-pending');
@@ -89,14 +134,14 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     const todayEl = document.getElementById('stat-today');
     const countEl = document.getElementById('row-count');
 
-    if (totalEl) totalEl.textContent = String(data.length);
-    if (pendingEl) pendingEl.textContent = String(data.filter((a: any) => a.status === 'pending').length);
-    if (confirmedEl) confirmedEl.textContent = String(data.filter((a: any) => a.status === 'confirmed').length);
-    if (todayEl) todayEl.textContent = String(data.filter((a: any) => a.appointment_date === today).length);
-    if (countEl) countEl.textContent = `${data.length} records`;
+    if (totalEl) totalEl.textContent = String(filtered.length);
+    if (pendingEl) pendingEl.textContent = String(filtered.filter((a: any) => a.status === 'pending').length);
+    if (confirmedEl) confirmedEl.textContent = String(filtered.filter((a: any) => a.status === 'confirmed').length);
+    if (todayEl) todayEl.textContent = String(filtered.filter((a: any) => a.appointment_date === todayStr).length);
+    if (countEl) countEl.textContent = `${filtered.length} records`;
 
     const tbody = document.getElementById('appointments-tbody')!;
-    if (data.length === 0) {
+    if (filtered.length === 0) {
       tbody.innerHTML = '<tr><td colspan="6" style="padding:3rem;text-align:center;color:#94A3B8;font-size:0.8125rem;">No appointments found.</td></tr>';
       return;
     }
@@ -108,8 +153,24 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       completed: 'background:#F1F5F9;color:#475569;',
     };
 
-    tbody.innerHTML = data.map((a: any) => `
-      <tr style="border-bottom:1px solid #F8FAFC;transition:background 0.1s;" onmouseover="this.style.background='#FAFAFA'" onmouseout="this.style.background=''">
+    const rowColors: Record<string, string> = {
+      pending:   '#FFFBEB',
+      confirmed: '#F0FDF4',
+      cancelled: '#FEF2F2',
+      completed: '#F8FAFC',
+    };
+    const hoverColors: Record<string, string> = {
+      pending:   '#FEF3C7',
+      confirmed: '#DCFCE7',
+      cancelled: '#FEE2E2',
+      completed: '#F1F5F9',
+    };
+
+    tbody.innerHTML = filtered.map((a: any) => {
+      const bg = rowColors[a.status] || '#FFFFFF';
+      const hover = hoverColors[a.status] || '#FAFAFA';
+      return `
+      <tr style="border-bottom:1px solid #F8FAFC;background:${bg};transition:background 0.1s;" onmouseover="this.style.background='${hover}'" onmouseout="this.style.background='${bg}'">
         <td style="padding:0.875rem 1.5rem;">
           <p style="font-weight:500;color:#0F172A;font-size:0.8125rem;">${a.patients?.full_name || '—'}</p>
           <p style="font-size:0.6875rem;color:#94A3B8;margin-top:0.125rem;">${a.patients?.phone || ''}</p>
@@ -128,7 +189,8 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
           </div>
         </td>
       </tr>
-    `).join('');
+      `;
+    }).join('');
   }
 
   (window as any).updateStatus = async (id: string, status: string) => {
@@ -138,6 +200,29 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
   document.getElementById('status-filter')?.addEventListener('change', (e) => {
     loadAppointments((e.target as HTMLSelectElement).value);
+  });
+
+  document.getElementById('search-input')?.addEventListener('input', (e) => {
+    currentSearchTerm = (e.target as HTMLInputElement).value;
+    renderTable();
+  });
+
+  document.querySelectorAll('.date-filter-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const target = e.target as HTMLButtonElement;
+      currentDateFilter = target.dataset.filter || 'all';
+      
+      document.querySelectorAll('.date-filter-btn').forEach(b => {
+        (b as HTMLButtonElement).style.background = 'white';
+        (b as HTMLButtonElement).style.color = '#64748B';
+        (b as HTMLButtonElement).style.borderColor = '#E2E8F0';
+      });
+      target.style.background = '#0EA5E9';
+      target.style.color = 'white';
+      target.style.borderColor = '#0EA5E9';
+
+      renderTable();
+    });
   });
 
   loadAppointments();
