@@ -52,7 +52,13 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     .select('*')
     .order('created_at', { ascending: false });
 
-  if (!error && data) {
+  if (error) {
+    console.error('Supabase fetch error:', error);
+    const tbody = document.getElementById('patients-tbody');
+    if (tbody) {
+      tbody.innerHTML = `<tr><td colspan="4" style="padding:3rem;text-align:center;color:#EF4444;font-size:0.8125rem;">Failed to load patients: ${error.message || 'Unknown error'}</td></tr>`;
+    }
+  } else if (data) {
     allPatients = data;
     const countEl = document.getElementById('total-count');
     if (countEl) countEl.textContent = `${data.length} patients`;

@@ -177,6 +177,7 @@ import Footer from '../components/Footer.astro';
     });
 
     if (error) {
+      console.error('Supabase booking error:', error);
       errorEl.textContent = 'Booking failed. Please try again.';
       errorEl.classList.remove('hidden');
       btn.disabled = false;
