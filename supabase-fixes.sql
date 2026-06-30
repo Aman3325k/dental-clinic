@@ -4,6 +4,9 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   role text DEFAULT 'patient' NOT NULL
 );
 
+-- Grant necessary Postgres role privileges so the Supabase API can access the table
+GRANT ALL ON TABLE public.profiles TO anon, authenticated, service_role;
+
 -- Ensure RLS is enabled on profiles
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
