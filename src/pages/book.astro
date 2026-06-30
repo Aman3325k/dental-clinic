@@ -106,15 +106,19 @@ import Footer from '../components/Footer.astro';
 
 <script>
   import { supabase } from '../lib/supabase';
+  import { checkAdminRole } from '../lib/utils';
 
   // Auth guard
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) {
     window.location.href = '/login';
-  } else if (session.user.email === import.meta.env.PUBLIC_ADMIN_EMAIL) {
-    window.location.href = '/admin';
   } else {
-    initBooking();
+    const isAdmin = await checkAdminRole(session.user.id);
+    if (isAdmin) {
+      window.location.href = '/admin';
+    } else {
+      initBooking();
+    }
   }
 
   function initBooking() {

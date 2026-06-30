@@ -85,15 +85,19 @@ import Footer from '../components/Footer.astro';
 
 <script>
   import { supabase } from '../lib/supabase';
+  import { checkAdminRole, escapeHTML } from '../lib/utils';
 
   // Auth guard
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) {
     window.location.href = '/login';
-  } else if (session.user.email === import.meta.env.PUBLIC_ADMIN_EMAIL) {
-    window.location.href = '/admin';
   } else {
-    initDashboard();
+    const isAdmin = await checkAdminRole(session.user.id);
+    if (isAdmin) {
+      window.location.href = '/admin';
+    } else {
+      initDashboard();
+    }
   }
 
   async function initDashboard() {
@@ -170,9 +174,9 @@ import Footer from '../components/Footer.astro';
       <div class="bg-white border border-slate-200 rounded-xl p-4 mb-3">
         <div class="flex items-start justify-between gap-4">
           <div>
-            <p class="font-medium text-slate-900 font-['DM_Sans']">${a.treatment_type}</p>
-            <p class="text-sm text-slate-500 mt-1 font-mono">${a.appointment_date} at ${a.appointment_time}</p>
-            ${a.notes ? `<p class="text-sm text-slate-400 italic mt-1">${a.notes}</p>` : ''}
+            <p class="font-medium text-slate-900 font-['DM_Sans']">${escapeHTML(a.treatment_type)}</p>
+            <p class="text-sm text-slate-500 mt-1 font-mono">${escapeHTML(a.appointment_date)} at ${escapeHTML(a.appointment_time)}</p>
+            ${a.notes ? `<p class="text-sm text-slate-400 italic mt-1">${escapeHTML(a.notes)}</p>` : ''}
           </div>
           <span class="status-${a.status} shrink-0">${a.status}</span>
         </div>

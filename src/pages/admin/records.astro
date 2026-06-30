@@ -78,11 +78,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
 <script>
   import { supabase } from '../../lib/supabase';
-
-  const ADMIN_EMAIL = import.meta.env.PUBLIC_ADMIN_EMAIL;
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) { window.location.href = '/login'; }
-  if (session!.user.email !== ADMIN_EMAIL) { window.location.href = '/dashboard'; }
+  import { escapeHTML } from '../../lib/utils';
 
   const { data: patients } = await supabase
     .from('patients')
@@ -124,27 +120,27 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       <div class="py-5 px-6 transition-colors duration-100 hover:bg-slate-50 ${i < data.length - 1 ? 'border-b border-slate-50' : ''}">
         <div class="flex items-start justify-between mb-3">
           <div>
-            <p class="font-['DM_Sans'] font-semibold text-slate-900 text-sm m-0">${(r.patients as any)?.full_name || 'Unknown'}</p>
-            <p class="font-mono text-[0.6875rem] text-slate-400 mt-0.5">${r.created_at?.split('T')[0]}</p>
+            <p class="font-['DM_Sans'] font-semibold text-slate-900 text-sm m-0">${escapeHTML((r.patients as any)?.full_name || 'Unknown')}</p>
+            <p class="font-mono text-[0.6875rem] text-slate-400 mt-0.5">${escapeHTML(r.created_at?.split('T')[0])}</p>
           </div>
           <div class="flex flex-col items-end gap-2">
             <button onclick="window.deleteRecord('${r.id}')" class="px-2 py-1 border border-red-500 text-red-500 rounded text-xs font-semibold hover:bg-red-50 transition-colors bg-white cursor-pointer font-['DM_Sans']">Delete</button>
             ${r.next_visit ? `
               <div class="bg-green-50 border border-green-200 rounded-md px-2.5 py-1 text-right">
                 <p class="text-[0.625rem] text-green-600 font-semibold uppercase tracking-wide">Next visit</p>
-                <p class="font-mono text-[0.6875rem] text-green-700">${r.next_visit}</p>
+                <p class="font-mono text-[0.6875rem] text-green-700">${escapeHTML(r.next_visit)}</p>
               </div>` : ''}
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
             <p class="text-[0.625rem] font-semibold text-slate-400 uppercase tracking-wide mb-1">Diagnosis</p>
-            <p class="text-[0.8125rem] text-slate-700">${r.diagnosis || '—'}</p>
+            <p class="text-[0.8125rem] text-slate-700">${escapeHTML(r.diagnosis || '—')}</p>
           </div>
           ${r.treatment_done ? `
           <div>
             <p class="text-[0.625rem] font-semibold text-slate-400 uppercase tracking-wide mb-1">Treatment</p>
-            <p class="text-[0.8125rem] text-slate-700">${r.treatment_done}</p>
+            <p class="text-[0.8125rem] text-slate-700">${escapeHTML(r.treatment_done)}</p>
           </div>` : ''}
         </div>
       </div>

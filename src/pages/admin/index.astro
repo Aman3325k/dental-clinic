@@ -95,11 +95,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
 <script>
   import { supabase } from '../../lib/supabase';
-
-  const ADMIN_EMAIL = import.meta.env.PUBLIC_ADMIN_EMAIL;
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) { window.location.href = '/login'; }
-  if (session!.user.email !== ADMIN_EMAIL) { window.location.href = '/dashboard'; }
+  import { escapeHTML } from '../../lib/utils';
 
   let allAppointments: any[] = [];
   let currentSearchTerm = '';
@@ -208,12 +204,12 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       return `
       <tr class="border-b border-slate-50 ${bg} transition-colors">
         <td class="py-3 px-6">
-          <p class="font-medium text-slate-900 text-[0.8125rem] whitespace-nowrap">${a.patients?.full_name || '—'}</p>
-          <p class="text-[0.6875rem] text-slate-400 mt-0.5 whitespace-nowrap">${a.patients?.phone || ''}</p>
+          <p class="font-medium text-slate-900 text-[0.8125rem] whitespace-nowrap">${escapeHTML(a.patients?.full_name || '—')}</p>
+          <p class="text-[0.6875rem] text-slate-400 mt-0.5 whitespace-nowrap">${escapeHTML(a.patients?.phone || '')}</p>
         </td>
-        <td class="py-3 px-4 font-mono text-slate-600 text-xs whitespace-nowrap">${a.appointment_date}</td>
-        <td class="py-3 px-4 font-mono text-slate-600 text-xs whitespace-nowrap">${a.appointment_time?.slice(0,5)}</td>
-        <td class="py-3 px-4 text-slate-700 text-[0.8125rem] whitespace-nowrap">${a.treatment_type}</td>
+        <td class="py-3 px-4 font-mono text-slate-600 text-xs whitespace-nowrap">${escapeHTML(a.appointment_date)}</td>
+        <td class="py-3 px-4 font-mono text-slate-600 text-xs whitespace-nowrap">${escapeHTML(a.appointment_time?.slice(0,5))}</td>
+        <td class="py-3 px-4 text-slate-700 text-[0.8125rem] whitespace-nowrap">${escapeHTML(a.treatment_type)}</td>
         <td class="py-3 px-4 whitespace-nowrap">
           <span class="${statusStyles[a.status] || ''} rounded-md py-1 px-2.5 text-[0.6875rem] font-semibold capitalize inline-block">${a.status}</span>
         </td>

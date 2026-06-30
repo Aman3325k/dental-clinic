@@ -19,7 +19,12 @@ import '../styles/global.css';
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 </head>
 <body class="bg-slate-50 m-0 text-slate-900">
-  <div class="flex min-h-screen flex-col md:flex-row">
+  <div id="admin-guard" class="fixed inset-0 bg-slate-50 flex flex-col items-center justify-center z-[100]">
+    <div class="w-8 h-8 border-4 border-sky-200 border-t-sky-500 rounded-full animate-spin mb-4"></div>
+    <p class="text-slate-500 font-['DM_Sans'] text-sm">Verifying access...</p>
+  </div>
+
+  <div id="admin-app" class="min-h-screen flex-col md:flex-row" style="display: none;">
 
     <!-- Mobile Top Bar -->
     <div class="md:hidden bg-slate-900 text-white p-4 flex justify-between items-center sticky top-0 z-50">
@@ -83,6 +88,26 @@ import '../styles/global.css';
 
   <script>
     import { supabase } from '../lib/supabase';
+    import { checkAdminRole } from '../lib/utils';
+    
+    // Auth logic & Guard
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      window.location.href = '/login';
+    } else {
+      const isAdmin = await checkAdminRole(session.user.id);
+      if (!isAdmin) {
+        window.location.href = '/dashboard';
+      } else {
+        const guard = document.getElementById('admin-guard');
+        if (guard) guard.style.display = 'none';
+        const app = document.getElementById('admin-app');
+        if (app) {
+          app.style.display = 'flex';
+        }
+      }
+    }
     
     // Auth logic
     document.getElementById('admin-signout')?.addEventListener('click', async () => {
