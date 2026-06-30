@@ -53,6 +53,7 @@ import Footer from '../components/Footer.astro';
 
 <script>
   import { supabase } from '../lib/supabase';
+  import { checkAdminRole } from '../lib/utils';
 
   const form = document.getElementById('login-form') as HTMLFormElement;
   const errorEl = document.getElementById('error-msg') as HTMLParagraphElement;
@@ -79,7 +80,9 @@ import Footer from '../components/Footer.astro';
       return;
     }
 
-    if (data.user?.email === import.meta.env.PUBLIC_ADMIN_EMAIL) {
+    const isAdmin = await checkAdminRole(data.user!.id);
+    
+    if (isAdmin) {
       window.location.href = '/admin';
     } else {
       window.location.href = '/dashboard';
