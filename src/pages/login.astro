@@ -80,6 +80,10 @@ import Footer from '../components/Footer.astro';
       return;
     }
 
+    // Force the Supabase client to sync the session to its internal state
+    // before we make an RLS-protected query
+    await supabase.auth.getSession();
+
     const isAdmin = await checkAdminRole(data.user!.id);
     
     if (isAdmin) {
