@@ -65,7 +65,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     console.error('Supabase fetch error:', error);
     const tbody = document.getElementById('patients-tbody');
     if (tbody) {
-      tbody.innerHTML = `<tr><td colspan="4" class="p-12 text-center text-red-500 text-[0.8125rem]">Failed to load patients: ${error.message || 'Unknown error'}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="4" class="p-12 text-center text-red-500 text-[0.8125rem]">Failed to load patients: ${escapeHTML(error.message) || 'Unknown error'}</td></tr>`;
     }
   } else if (data) {
     allPatients = data;

@@ -187,13 +187,13 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       let actionsHtml = '';
       if (a.status === 'pending') {
         actionsHtml = `
-          <button onclick="updateStatus('${a.id}','confirmed')" class="text-[0.6875rem] border border-emerald-200 text-emerald-700 py-1 px-2.5 rounded-md bg-white hover:bg-emerald-50 font-medium transition-colors">Confirm</button>
-          <button onclick="updateStatus('${a.id}','cancelled')" class="text-[0.6875rem] border border-red-200 text-red-700 py-1 px-2.5 rounded-md bg-white hover:bg-red-50 font-medium transition-colors">Cancel</button>
+          <button onclick="updateStatus('${escapeHTML(a.id)}','confirmed')" class="text-[0.6875rem] border border-emerald-200 text-emerald-700 py-1 px-2.5 rounded-md bg-white hover:bg-emerald-50 font-medium transition-colors">Confirm</button>
+          <button onclick="updateStatus('${escapeHTML(a.id)}','cancelled')" class="text-[0.6875rem] border border-red-200 text-red-700 py-1 px-2.5 rounded-md bg-white hover:bg-red-50 font-medium transition-colors">Cancel</button>
         `;
       } else if (a.status === 'confirmed') {
         actionsHtml = `
-          <button onclick="updateStatus('${a.id}','completed')" class="text-[0.6875rem] border border-slate-200 text-slate-600 py-1 px-2.5 rounded-md bg-white hover:bg-slate-50 font-medium transition-colors">Done</button>
-          <button onclick="updateStatus('${a.id}','cancelled')" class="text-[0.6875rem] border border-red-200 text-red-700 py-1 px-2.5 rounded-md bg-white hover:bg-red-50 font-medium transition-colors">Cancel</button>
+          <button onclick="updateStatus('${escapeHTML(a.id)}','completed')" class="text-[0.6875rem] border border-slate-200 text-slate-600 py-1 px-2.5 rounded-md bg-white hover:bg-slate-50 font-medium transition-colors">Done</button>
+          <button onclick="updateStatus('${escapeHTML(a.id)}','cancelled')" class="text-[0.6875rem] border border-red-200 text-red-700 py-1 px-2.5 rounded-md bg-white hover:bg-red-50 font-medium transition-colors">Cancel</button>
         `;
       } else if (a.status === 'cancelled') {
         actionsHtml = `<span class="text-[0.6875rem] text-slate-400 font-medium">Cancelled</span>`;
@@ -211,7 +211,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         <td class="py-3 px-4 font-mono text-slate-600 text-xs whitespace-nowrap">${escapeHTML(a.appointment_time?.slice(0,5))}</td>
         <td class="py-3 px-4 text-slate-700 text-[0.8125rem] whitespace-nowrap">${escapeHTML(a.treatment_type)}</td>
         <td class="py-3 px-4 whitespace-nowrap">
-          <span class="${statusStyles[a.status] || ''} rounded-md py-1 px-2.5 text-[0.6875rem] font-semibold capitalize inline-block">${a.status}</span>
+          <span class="${escapeHTML(statusStyles[a.status] || '')} rounded-md py-1 px-2.5 text-[0.6875rem] font-semibold capitalize inline-block">${escapeHTML(a.status)}</span>
         </td>
         <td class="py-3 px-6 whitespace-nowrap">
           <div class="flex gap-2 items-center">

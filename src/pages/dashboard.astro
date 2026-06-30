@@ -178,7 +178,7 @@ import Footer from '../components/Footer.astro';
             <p class="text-sm text-slate-500 mt-1 font-mono">${escapeHTML(a.appointment_date)} at ${escapeHTML(a.appointment_time)}</p>
             ${a.notes ? `<p class="text-sm text-slate-400 italic mt-1">${escapeHTML(a.notes)}</p>` : ''}
           </div>
-          <span class="status-${a.status} shrink-0">${a.status}</span>
+          <span class="status-${escapeHTML(a.status)} shrink-0">${escapeHTML(a.status)}</span>
         </div>
       </div>
     `).join('');
