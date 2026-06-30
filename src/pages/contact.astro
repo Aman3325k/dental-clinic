@@ -100,15 +100,16 @@ import Footer from '../components/Footer.astro';
       return;
     }
 
-    // Mock submission
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending...';
+    const phone = (document.getElementById('contact-phone') as HTMLInputElement).value.trim();
+    
+    const subject = encodeURIComponent(`New Contact Form Submission from ${name}`);
+    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nPhone: ${phone || 'Not provided'}\n\nMessage:\n${message}`);
+    
+    window.location.href = `mailto:admin@dental.com?subject=${subject}&body=${body}`;
 
     setTimeout(() => {
       form.reset();
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Send message';
       successMsg.classList.remove('hidden');
-    }, 800);
+    }, 500);
   });
 </script>

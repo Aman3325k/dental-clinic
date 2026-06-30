@@ -117,31 +117,21 @@ import Footer from '../components/Footer.astro';
     btn.disabled = true;
     btn.textContent = 'Creating account...';
 
-    const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
+    const { data: authData, error: authError } = await supabase.auth.signUp({ 
+      email, 
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+          phone: phone,
+          date_of_birth: dob || null,
+        }
+      }
+    });
 
     if (authError) {
       console.error('Signup auth error:', authError);
       errorEl.textContent = authError.message;
-      errorEl.classList.remove('hidden');
-      btn.disabled = false;
-      btn.textContent = 'Create account';
-      return;
-    }
-
-    // Delay to ensure auth session is fully established before RLS evaluates
-    await new Promise(resolve => setTimeout(resolve, 200));
-
-    const { error: profileError } = await supabase.from('patients').insert({
-      id: authData.user!.id,
-      full_name: fullName,
-      phone: phone,
-      date_of_birth: dob || null,
-    });
-
-    if (profileError) {
-      console.error('Profile insert error:', profileError);
-      // Edge case: if patients insert fails, the auth account already exists but has no profile
-      errorEl.textContent = `Profile error: ${profileError.message}. Please try signing in — your account may already exist.`;
       errorEl.classList.remove('hidden');
       btn.disabled = false;
       btn.textContent = 'Create account';

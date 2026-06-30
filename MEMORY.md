@@ -23,7 +23,7 @@ records: select only for auth.uid() = patient_id
 
 ## What is built
 Phase 1 (Supabase): ✅ Complete
-Phase 2 (Scaffold): ✅ Complete — astro.config.mjs uses Tailwind v4 as Vite plugin
+Phase 2 (Functional fixes): ✅ Complete — Booking constraints (dates, double-bookings), patient cancellations, ghost accounts, contact form mailto, password reset PKCE flow.
 Phase 3 (Layouts + components + home page): ✅ Complete
 Phase 4 (Login, signup, contact, 404): ✅ Complete
 Phase 5 (Patient dashboard + booking): ✅ Complete

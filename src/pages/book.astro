@@ -124,13 +124,22 @@ import Footer from '../components/Footer.astro';
   function initBooking() {
     let formData: Record<string, string> = {};
 
+    let minDateStr = '';
+    let maxDateStr = '';
     // Set min date to today
     const dateInput = document.getElementById('appt-date') as HTMLInputElement;
     if (dateInput) {
       const today = new Date();
       // Adjust to local timezone format YYYY-MM-DD
       today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
-      dateInput.min = today.toISOString().split('T')[0];
+      minDateStr = today.toISOString().split('T')[0];
+      dateInput.min = minDateStr;
+      
+      // Max 1 year in advance
+      const max = new Date();
+      max.setFullYear(max.getFullYear() + 1);
+      maxDateStr = max.toISOString().split('T')[0];
+      dateInput.max = maxDateStr;
     }
 
     // Step 1 → Step 2
@@ -145,6 +154,18 @@ import Footer from '../components/Footer.astro';
 
       if (!treatment || !date || !time) {
         errorEl.textContent = 'Please fill in all required fields.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      
+      // Strict date validation
+      if (date < minDateStr) {
+        errorEl.textContent = 'Please select a valid date in the future.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      if (date > maxDateStr) {
+        errorEl.textContent = 'You can only book up to 1 year in advance.';
         errorEl.classList.remove('hidden');
         return;
       }
@@ -210,7 +231,13 @@ import Footer from '../components/Footer.astro';
 
       if (error) {
         console.error('Supabase booking error:', error);
-        errorEl.textContent = 'Booking failed. Please try again.';
+        if (error.code === '23505') {
+          errorEl.textContent = 'This slot is already taken. Please choose another time or date.';
+        } else if (error.code === '23514' || error.message?.includes('chk_future_date')) {
+          errorEl.textContent = 'Cannot book an appointment in the past.';
+        } else {
+          errorEl.textContent = 'Booking failed. Please try again.';
+        }
         errorEl.classList.remove('hidden');
         btn.disabled = false;
         btn.textContent = 'Confirm Booking';
