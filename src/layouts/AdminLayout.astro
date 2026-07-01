@@ -62,19 +62,23 @@ import '../styles/global.css';
       
       <nav class="flex-1 p-4 flex flex-col gap-1 overflow-y-auto">
         <a href="/admin" class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${activePage === 'dashboard' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
-          <span class="text-lg">📋</span> Appointments
+          <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          Appointments
         </a>
         <a href="/admin/patients" class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${activePage === 'patients' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
-          <span class="text-lg">👥</span> Patients
+          <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          Patients
         </a>
         <a href="/admin/records" class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${activePage === 'records' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
-          <span class="text-lg">📁</span> Records
+          <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+          Records
         </a>
       </nav>
       
       <div class="p-4 border-t border-slate-800">
         <button id="admin-signout" class="w-full text-left text-sm text-slate-400 hover:text-white flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors">
-          <span class="text-lg">🚪</span> Sign out
+          <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          Sign out
         </button>
       </div>
     </aside>
@@ -137,6 +141,20 @@ import '../styles/global.css';
     menuBtn?.addEventListener('click', toggleMenu);
     closeBtn?.addEventListener('click', toggleMenu);
     overlay?.addEventListener('click', toggleMenu);
+
+    // Global action dropdown logic
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.dropdown-container')) {
+        document.querySelectorAll('.action-dropdown').forEach(d => d.classList.add('hidden'));
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.action-dropdown').forEach(d => d.classList.add('hidden'));
+      }
+    });
   </script>
 </body>
 </html>

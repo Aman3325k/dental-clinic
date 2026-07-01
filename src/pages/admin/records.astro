@@ -23,11 +23,12 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 lg:sticky lg:top-6">
       <p class="font-['DM_Sans'] font-semibold text-slate-900 text-[0.9375rem] m-0 mb-5">New Record</p>
 
-      <div class="mb-4">
+      <div class="mb-4 relative dropdown-container">
         <label class="block text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">Patient</label>
-        <select id="record-patient" class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-[0.8125rem] text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-sky-500">
-          <option value="">Select patient...</option>
-        </select>
+        <input id="record-patient-input" type="text" autocomplete="off" placeholder="Search patient..."
+          class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-[0.8125rem] text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 box-border" />
+        <input type="hidden" id="record-patient" />
+        <div id="patient-combobox-dropdown" class="absolute z-20 w-full bg-white border border-slate-200 rounded-lg shadow-lg hidden max-h-60 overflow-y-auto mt-1"></div>
       </div>
 
       <div class="mb-4">
@@ -71,7 +72,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
       <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
         <div id="records-list">
-          <div class="p-12 text-center text-slate-400 text-[0.8125rem]">Loading...</div>
+          <div class="p-12 flex justify-center"><div class="w-6 h-6 border-2 border-sky-200 border-t-sky-500 rounded-full animate-spin"></div></div>
         </div>
       </div>
     </div>
@@ -115,19 +116,81 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     .select('id, full_name')
     .order('full_name');
 
-  const recordSelect = document.getElementById('record-patient') as HTMLSelectElement;
+  const patientInput = document.getElementById('record-patient-input') as HTMLInputElement;
+  const hiddenPatientId = document.getElementById('record-patient') as HTMLInputElement;
+  const patientDropdown = document.getElementById('patient-combobox-dropdown')!;
+
   const filterSelect = document.getElementById('filter-patient') as HTMLSelectElement;
+
+  function renderCombobox(list: any[]) {
+    if (list.length === 0) {
+      patientDropdown.innerHTML = '<div class="px-3 py-2 text-[0.8125rem] text-slate-400">No matching patients</div>';
+      return;
+    }
+    patientDropdown.innerHTML = list.map(p => `
+      <div class="px-3 py-2 text-[0.8125rem] text-slate-700 hover:bg-slate-50 cursor-pointer combobox-option transition-colors" data-id="${p.id}" data-name="${escapeHTML(p.full_name)}">
+        ${escapeHTML(p.full_name)}
+      </div>
+    `).join('');
+  }
 
   if (patients) {
     patients.forEach((p: any) => {
-      [recordSelect, filterSelect].forEach(sel => {
-        const opt = document.createElement('option');
-        opt.value = p.id;
-        opt.textContent = p.full_name;
-        sel.appendChild(opt);
-      });
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = p.full_name;
+      filterSelect.appendChild(opt);
+    });
+
+    renderCombobox(patients);
+
+    patientInput.addEventListener('input', (e) => {
+      const val = (e.target as HTMLInputElement).value.toLowerCase();
+      hiddenPatientId.value = ''; // clear on typing
+      renderCombobox(patients.filter(p => p.full_name.toLowerCase().includes(val)));
+      patientDropdown.classList.remove('hidden');
+    });
+
+    patientInput.addEventListener('focus', () => {
+      patientDropdown.classList.remove('hidden');
+    });
+
+    patientDropdown.addEventListener('click', (e) => {
+      const target = (e.target as HTMLElement).closest('.combobox-option');
+      if (target) {
+        hiddenPatientId.value = target.getAttribute('data-id') || '';
+        patientInput.value = target.getAttribute('data-name') || '';
+        patientDropdown.classList.add('hidden');
+      }
+    });
+
+    // Handle keyboard nav
+    patientInput.addEventListener('keydown', (e) => {
+      const options = Array.from(patientDropdown.querySelectorAll('.combobox-option'));
+      const active = document.activeElement;
+      
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        patientDropdown.classList.remove('hidden');
+        if (options.length > 0) (options[0] as HTMLElement).focus();
+      } else if (e.key === 'Escape') {
+        patientDropdown.classList.add('hidden');
+      }
     });
   }
+
+  // Handle unsaved changes warning
+  let hasUnsavedChanges = false;
+  const markUnsaved = () => hasUnsavedChanges = true;
+  document.getElementById('record-diagnosis')?.addEventListener('input', markUnsaved);
+  document.getElementById('record-treatment')?.addEventListener('input', markUnsaved);
+
+  window.addEventListener('beforeunload', (e) => {
+    if (hasUnsavedChanges) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
 
   async function loadRecords(patientFilter = '') {
     let query = supabase
@@ -142,7 +205,14 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     const el = document.getElementById('records-list')!;
 
     if (error || !data || data.length === 0) {
-      el.innerHTML = '<div class="p-12 text-center text-slate-400 text-[0.8125rem]">No records yet.</div>';
+      el.innerHTML = `
+        <div class="p-12 text-center flex flex-col items-center justify-center">
+          <svg class="w-12 h-12 text-slate-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          <p class="font-medium text-slate-900 text-[0.9375rem] mb-1">No records yet</p>
+          <p class="text-slate-500 text-[0.8125rem]">Select a patient and add their first record.</p>
+        </div>`;
       return;
     }
 
@@ -154,9 +224,11 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
             <p class="font-mono text-[0.6875rem] text-slate-400 mt-0.5">${escapeHTML(r.created_at?.split('T')[0])}</p>
           </div>
           <div class="flex flex-col items-end gap-2 shrink-0">
-            <button onclick="window.openDeleteModal('${escapeHTML(r.id)}')" class="px-2 py-1 border border-red-500 text-red-500 rounded text-xs font-semibold hover:bg-red-50 transition-colors bg-white cursor-pointer font-['DM_Sans']">Delete</button>
+            <button onclick="window.openDeleteModal('${escapeHTML(r.id)}')" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors btn-press focus:outline-none focus:ring-2 focus:ring-sky-500" aria-label="Delete Record">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
             ${r.next_visit ? `
-              <div class="bg-green-50 border border-green-200 rounded-md px-2.5 py-1 text-right">
+              <div class="bg-green-50 border border-green-200 rounded-md px-2.5 py-1 text-right mt-1">
                 <p class="text-[0.625rem] text-green-600 font-semibold uppercase tracking-wide">Next visit</p>
                 <p class="font-mono text-[0.6875rem] text-green-700">${escapeHTML(r.next_visit)}</p>
               </div>` : ''}
@@ -218,7 +290,9 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       errorEl.classList.remove('hidden');
     } else {
       successEl.classList.remove('hidden');
-      (document.getElementById('record-patient') as HTMLSelectElement).value = '';
+      hasUnsavedChanges = false;
+      hiddenPatientId.value = '';
+      patientInput.value = '';
       (document.getElementById('record-diagnosis') as HTMLTextAreaElement).value = '';
       (document.getElementById('record-treatment') as HTMLTextAreaElement).value = '';
       (document.getElementById('record-next-visit') as HTMLInputElement).value = '';

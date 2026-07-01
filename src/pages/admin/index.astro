@@ -22,21 +22,33 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
   <!-- Stats row -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-    <div class="bg-white border border-slate-200 border-t-[3px] border-t-indigo-500 rounded-xl p-5 shadow-sm">
-      <p id="stat-total" class="font-['DM_Sans'] font-extrabold text-3xl text-slate-900 leading-none m-0">—</p>
-      <p class="text-xs text-slate-400 mt-2 uppercase tracking-wider font-medium">Total</p>
+    <div class="bg-white border border-slate-200 border-t-[3px] border-t-indigo-500 rounded-xl p-5 shadow-sm relative overflow-hidden">
+      <div class="absolute -right-2 -bottom-2 opacity-5 text-indigo-500 pointer-events-none">
+        <svg class="w-20 h-20" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" /><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" /></svg>
+      </div>
+      <p id="stat-total" class="font-['DM_Sans'] font-extrabold text-3xl text-slate-900 leading-none m-0 relative z-10">—</p>
+      <p class="text-xs text-slate-400 mt-2 uppercase tracking-wider font-medium relative z-10">Total</p>
     </div>
-    <div class="bg-white border border-slate-200 border-t-[3px] border-t-amber-500 rounded-xl p-5 shadow-sm">
-      <p id="stat-pending" class="font-['DM_Sans'] font-extrabold text-3xl text-slate-900 leading-none m-0">—</p>
-      <p class="text-xs text-slate-400 mt-2 uppercase tracking-wider font-medium">Pending</p>
+    <div class="bg-white border border-slate-200 border-t-[3px] border-t-amber-500 rounded-xl p-5 shadow-sm relative overflow-hidden">
+      <div class="absolute -right-2 -bottom-2 opacity-5 text-amber-500 pointer-events-none">
+        <svg class="w-20 h-20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" /></svg>
+      </div>
+      <p id="stat-pending" class="font-['DM_Sans'] font-extrabold text-3xl text-slate-900 leading-none m-0 relative z-10">—</p>
+      <p class="text-xs text-slate-400 mt-2 uppercase tracking-wider font-medium relative z-10">Pending</p>
     </div>
-    <div class="bg-white border border-slate-200 border-t-[3px] border-t-emerald-500 rounded-xl p-5 shadow-sm">
-      <p id="stat-confirmed" class="font-['DM_Sans'] font-extrabold text-3xl text-slate-900 leading-none m-0">—</p>
-      <p class="text-xs text-slate-400 mt-2 uppercase tracking-wider font-medium">Confirmed</p>
+    <div class="bg-white border border-slate-200 border-t-[3px] border-t-emerald-500 rounded-xl p-5 shadow-sm relative overflow-hidden">
+      <div class="absolute -right-2 -bottom-2 opacity-5 text-emerald-500 pointer-events-none">
+        <svg class="w-20 h-20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+      </div>
+      <p id="stat-confirmed" class="font-['DM_Sans'] font-extrabold text-3xl text-slate-900 leading-none m-0 relative z-10">—</p>
+      <p class="text-xs text-slate-400 mt-2 uppercase tracking-wider font-medium relative z-10">Confirmed</p>
     </div>
-    <div class="bg-white border border-slate-200 border-t-[3px] border-t-sky-500 rounded-xl p-5 shadow-sm">
-      <p id="stat-today" class="font-['DM_Sans'] font-extrabold text-3xl text-slate-900 leading-none m-0">—</p>
-      <p class="text-xs text-slate-400 mt-2 uppercase tracking-wider font-medium">Today</p>
+    <div class="bg-white border border-slate-200 border-t-[3px] border-t-sky-500 rounded-xl p-5 shadow-sm relative overflow-hidden">
+      <div class="absolute -right-2 -bottom-2 opacity-5 text-sky-500 pointer-events-none">
+        <svg class="w-20 h-20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" /></svg>
+      </div>
+      <p id="stat-today" class="font-['DM_Sans'] font-extrabold text-3xl text-slate-900 leading-none m-0 relative z-10">—</p>
+      <p class="text-xs text-slate-400 mt-2 uppercase tracking-wider font-medium relative z-10">Today</p>
     </div>
   </div>
 
@@ -65,13 +77,15 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     </div>
   </div>
 
-  <!-- Table -->
+  <!-- Table & Cards Container -->
   <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
     <div class="py-4 px-6 border-b border-slate-100 flex items-center justify-between">
       <p class="text-[0.8125rem] font-semibold text-slate-900">All Appointments</p>
       <p id="row-count" class="text-xs text-slate-400 font-mono"></p>
     </div>
-    <div class="overflow-x-auto">
+    
+    <!-- Desktop Table -->
+    <div class="hidden md:block overflow-x-auto">
       <table class="w-full border-collapse text-[0.8125rem]">
         <thead>
           <tr class="border-b border-slate-100 bg-slate-50/50">
@@ -80,13 +94,18 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
             <th class="text-left py-3 px-4 text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap">Time</th>
             <th class="text-left py-3 px-4 text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap">Treatment</th>
             <th class="text-left py-3 px-4 text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap">Status</th>
-            <th class="text-left py-3 px-6 text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap">Actions</th>
+            <th class="text-left py-3 px-6 text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap text-right">Actions</th>
           </tr>
         </thead>
         <tbody id="appointments-tbody">
-          <tr><td colspan="6" class="p-12 text-center text-slate-400 text-[0.8125rem]">Loading...</td></tr>
+          <tr><td colspan="6" class="p-12"><div class="flex justify-center"><div class="w-6 h-6 border-2 border-sky-200 border-t-sky-500 rounded-full animate-spin"></div></div></td></tr>
         </tbody>
       </table>
+    </div>
+    
+    <!-- Mobile Cards -->
+    <div id="appointments-mobile" class="md:hidden flex flex-col divide-y divide-slate-100">
+      <div class="p-12 flex justify-center"><div class="w-6 h-6 border-2 border-sky-200 border-t-sky-500 rounded-full animate-spin"></div></div>
     </div>
   </div>
 
@@ -197,8 +216,19 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     if (countEl) countEl.textContent = `${filtered.length} records`;
 
     const tbody = document.getElementById('appointments-tbody')!;
+    const mobileContainer = document.getElementById('appointments-mobile')!;
+    
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" class="p-12 text-center text-slate-400 text-[0.8125rem]">No appointments found.</td></tr>';
+      const emptyHtml = `
+        <div class="p-12 text-center flex flex-col items-center justify-center">
+          <svg class="w-12 h-12 text-slate-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          <p class="font-medium text-slate-900 text-[0.9375rem] mb-1">No appointments found</p>
+          <p class="text-slate-500 text-[0.8125rem]">Try adjusting your search or date filters.</p>
+        </div>`;
+      tbody.innerHTML = `<tr><td colspan="6">${emptyHtml}</td></tr>`;
+      mobileContainer.innerHTML = emptyHtml;
       return;
     }
 
@@ -210,36 +240,38 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     };
 
     const rowColors: Record<string, string> = {
-      pending:   'bg-amber-50/30 hover:bg-amber-50',
-      confirmed: 'bg-emerald-50/30 hover:bg-emerald-50',
-      cancelled: 'bg-red-50/30 hover:bg-red-50',
-      completed: 'bg-slate-50/50 hover:bg-slate-100/50',
+      pending:   'bg-amber-50/20 hover:bg-amber-50/60',
+      confirmed: 'bg-emerald-50/20 hover:bg-emerald-50/60',
+      cancelled: 'bg-red-50/20 hover:bg-red-50/60',
+      completed: 'bg-slate-50/30 hover:bg-slate-100/50',
     };
 
+    const generateActions = (a: any) => {
+      let menuItems = '';
+      if (a.status === 'pending') {
+        menuItems += `<button onclick="updateStatus('${escapeHTML(a.id)}','confirmed')" class="w-full text-left px-4 py-2 text-[0.8125rem] font-medium text-emerald-700 hover:bg-emerald-50 transition-colors">Confirm</button>`;
+        menuItems += `<button onclick="updateStatus('${escapeHTML(a.id)}','cancelled')" class="w-full text-left px-4 py-2 text-[0.8125rem] font-medium text-red-700 hover:bg-red-50 transition-colors">Cancel</button>`;
+      } else if (a.status === 'confirmed') {
+        menuItems += `<button onclick="updateStatus('${escapeHTML(a.id)}','completed')" class="w-full text-left px-4 py-2 text-[0.8125rem] font-medium text-slate-700 hover:bg-slate-100 transition-colors">Mark as Done</button>`;
+        menuItems += `<button onclick="updateStatus('${escapeHTML(a.id)}','cancelled')" class="w-full text-left px-4 py-2 text-[0.8125rem] font-medium text-red-700 hover:bg-red-50 transition-colors">Cancel</button>`;
+      }
+      menuItems += `<button onclick="confirmDeleteAppointment('${escapeHTML(a.id)}')" class="w-full text-left px-4 py-2 text-[0.8125rem] font-medium text-red-600 hover:bg-red-50 transition-colors">Delete</button>`;
+
+      return `
+        <div class="relative dropdown-container inline-block text-left">
+          <button onclick="toggleDropdown('action-${escapeHTML(a.id)}')" class="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors btn-press focus:outline-none focus:ring-2 focus:ring-sky-500">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/></svg>
+          </button>
+          <div id="action-${escapeHTML(a.id)}" class="action-dropdown hidden absolute right-0 top-full mt-1 w-36 bg-white rounded-lg shadow-lg border border-slate-100 overflow-hidden z-20 py-1">
+            ${menuItems}
+          </div>
+        </div>
+      `;
+    };
+
+    // Desktop
     tbody.innerHTML = filtered.map((a: any) => {
       const bg = rowColors[a.status] || 'bg-white hover:bg-slate-50';
-      
-      let actionsHtml = '';
-      if (a.status === 'pending') {
-        actionsHtml = `
-          <button onclick="updateStatus('${escapeHTML(a.id)}','confirmed')" class="text-[0.6875rem] border border-emerald-200 text-emerald-700 py-1 px-2.5 rounded-md bg-white hover:bg-emerald-50 font-medium transition-colors">Confirm</button>
-          <button onclick="updateStatus('${escapeHTML(a.id)}','cancelled')" class="text-[0.6875rem] border border-red-200 text-red-700 py-1 px-2.5 rounded-md bg-white hover:bg-red-50 font-medium transition-colors">Cancel</button>
-        `;
-      } else if (a.status === 'confirmed') {
-        actionsHtml = `
-          <button onclick="updateStatus('${escapeHTML(a.id)}','completed')" class="text-[0.6875rem] border border-slate-200 text-slate-600 py-1 px-2.5 rounded-md bg-white hover:bg-slate-50 font-medium transition-colors">Done</button>
-          <button onclick="updateStatus('${escapeHTML(a.id)}','cancelled')" class="text-[0.6875rem] border border-red-200 text-red-700 py-1 px-2.5 rounded-md bg-white hover:bg-red-50 font-medium transition-colors">Cancel</button>
-        `;
-      } else if (a.status === 'cancelled') {
-        actionsHtml = `<span class="text-[0.6875rem] text-slate-400 font-medium">Cancelled</span>`;
-      } else if (a.status === 'completed') {
-        actionsHtml = `<span class="text-[0.6875rem] text-slate-400 font-medium">Completed</span>`;
-      }
-
-      actionsHtml += `
-        <button onclick="confirmDeleteAppointment('${escapeHTML(a.id)}')" class="text-[0.6875rem] border border-red-200 text-red-600 py-1 px-2.5 rounded-md bg-white hover:bg-red-50 font-medium transition-colors ml-2">Delete</button>
-      `;
-
       return `
       <tr class="border-b border-slate-50 ${bg} transition-colors">
         <td class="py-3 px-6">
@@ -252,15 +284,52 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         <td class="py-3 px-4 whitespace-nowrap">
           <span class="${escapeHTML(statusStyles[a.status] || '')} rounded-md py-1 px-2.5 text-[0.6875rem] font-semibold capitalize inline-block">${escapeHTML(a.status)}</span>
         </td>
-        <td class="py-3 px-6 whitespace-nowrap">
-          <div class="flex gap-2 items-center">
-            ${actionsHtml}
-          </div>
+        <td class="py-3 px-6 whitespace-nowrap text-right">
+          ${generateActions(a)}
         </td>
       </tr>
       `;
     }).join('');
+
+    // Mobile
+    mobileContainer.innerHTML = filtered.map((a: any) => {
+      const bg = rowColors[a.status] || 'bg-white';
+      return `
+      <div class="${bg} p-4 transition-colors">
+        <div class="flex justify-between items-start mb-2">
+          <div>
+            <p class="font-medium text-slate-900 text-[0.9375rem]">${escapeHTML(a.patients?.full_name || '—')}</p>
+            <p class="text-xs text-slate-400 mt-0.5">${escapeHTML(a.patients?.phone || '')}</p>
+          </div>
+          ${generateActions(a)}
+        </div>
+        <div class="grid grid-cols-2 gap-y-2 mt-3">
+          <div>
+            <p class="text-[0.625rem] text-slate-400 uppercase tracking-wider font-semibold">Date & Time</p>
+            <p class="font-mono text-[0.8125rem] text-slate-700">${escapeHTML(a.appointment_date)} <span class="text-slate-400 mx-1">•</span> ${escapeHTML(a.appointment_time?.slice(0,5))}</p>
+          </div>
+          <div>
+            <p class="text-[0.625rem] text-slate-400 uppercase tracking-wider font-semibold">Status</p>
+            <span class="${escapeHTML(statusStyles[a.status] || '')} rounded border-none py-0.5 px-2 text-[0.6875rem] font-semibold capitalize inline-block mt-0.5">${escapeHTML(a.status)}</span>
+          </div>
+          <div class="col-span-2">
+            <p class="text-[0.625rem] text-slate-400 uppercase tracking-wider font-semibold">Treatment</p>
+            <p class="text-[0.8125rem] text-slate-700">${escapeHTML(a.treatment_type)}</p>
+          </div>
+        </div>
+      </div>
+      `;
+    }).join('');
   }
+
+  (window as any).toggleDropdown = (id: string) => {
+    const el = document.getElementById(id);
+    const wasHidden = el?.classList.contains('hidden');
+    // Hide all others
+    document.querySelectorAll('.action-dropdown').forEach(d => d.classList.add('hidden'));
+    // Toggle targeted one
+    if (wasHidden) el?.classList.remove('hidden');
+  };
 
   (window as any).updateStatus = async (id: string, status: string) => {
     await supabase.from('appointments').update({ status }).eq('id', id);
