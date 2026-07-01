@@ -37,7 +37,7 @@ import Footer from '../components/Footer.astro';
             </div>
             <div class="text-center mt-4">
               <p class="text-xs text-slate-400 uppercase tracking-wider mb-1">Next visit</p>
-              <p id="next-visit" class="text-sm font-medium text-slate-700">—</p>
+              <p id="next-visit" class="text-sm font-medium text-slate-700 font-mono">—</p>
             </div>
           </div>
         </aside>
@@ -81,6 +81,34 @@ import Footer from '../components/Footer.astro';
 
     <Footer />
   </div>
+
+  <!-- Cancel Confirmation Modal -->
+  <div id="cancel-modal" class="fixed inset-0 z-[200] flex items-center justify-center hidden" role="dialog" aria-modal="true" aria-labelledby="cancel-modal-title">
+    <!-- Overlay -->
+    <div id="cancel-modal-overlay" class="absolute inset-0 bg-slate-900/50"></div>
+    <!-- Card -->
+    <div class="relative bg-white rounded-xl shadow-xl p-6 w-full max-w-sm mx-4 font-['DM_Sans']">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 6v4M10 14h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="#EF4444" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2 id="cancel-modal-title" class="font-bold text-slate-900 text-base">Cancel appointment?</h2>
+      </div>
+      <p class="text-sm text-slate-500 mb-5 pl-[3.25rem]">This action cannot be undone. The appointment will be marked as cancelled.</p>
+      <!-- Inline error inside modal -->
+      <div id="cancel-modal-error" class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"></div>
+      <div class="flex gap-3">
+        <button id="cancel-modal-back" class="flex-1 py-2.5 rounded-lg border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition">
+          Go back
+        </button>
+        <button id="cancel-modal-confirm" class="flex-1 py-2.5 rounded-lg bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+          Yes, cancel appointment
+        </button>
+      </div>
+    </div>
+  </div>
 </BaseLayout>
 
 <script>
@@ -98,6 +126,12 @@ import Footer from '../components/Footer.astro';
     } else {
       initDashboard();
     }
+  }
+
+  function formatDate(iso: string): string {
+    const [year, month, day] = iso.split('-').map(Number);
+    const d = new Date(year, month - 1, day);
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
   async function initDashboard() {
@@ -153,7 +187,7 @@ import Footer from '../components/Footer.astro';
 
       const nextEl = document.getElementById('next-visit');
       if (nextEl && upcoming.length > 0) {
-        nextEl.textContent = upcoming[0].appointment_date;
+        nextEl.textContent = formatDate(upcoming[0].appointment_date);
       } else if (nextEl) {
         nextEl.textContent = 'None scheduled';
       }
@@ -175,13 +209,13 @@ import Footer from '../components/Footer.astro';
         <div class="flex items-start justify-between gap-4">
           <div>
             <p class="font-medium text-slate-900 font-['DM_Sans']">${escapeHTML(a.treatment_type)}</p>
-            <p class="text-sm text-slate-500 mt-1 font-mono">${escapeHTML(a.appointment_date)} at ${escapeHTML(a.appointment_time)}</p>
+            <p class="text-sm text-slate-500 mt-1 font-mono">${formatDate(a.appointment_date)} at ${escapeHTML(a.appointment_time)}</p>
             ${a.notes ? `<p class="text-sm text-slate-400 italic mt-1">${escapeHTML(a.notes)}</p>` : ''}
           </div>
           <div class="flex flex-col items-end gap-2 shrink-0">
             <span class="status-${escapeHTML(a.status)}">${escapeHTML(a.status)}</span>
-            ${id === 'upcoming-list' && (a.status === 'pending' || a.status === 'confirmed') ? 
-              `<button onclick="cancelAppointment('${a.id}')" class="text-xs text-red-500 hover:underline transition">Cancel</button>` : ''}
+            ${id === 'upcoming-list' && (a.status === 'pending' || a.status === 'confirmed') ?
+              `<button onclick="openCancelModal('${a.id}')" class="text-xs px-2.5 py-1 rounded-md border border-red-200 text-red-600 hover:bg-red-50 transition font-medium">Cancel</button>` : ''}
           </div>
         </div>
       </div>
@@ -216,22 +250,60 @@ import Footer from '../components/Footer.astro';
     }
   };
 
-  // Cancel appointment
-  (window as any).cancelAppointment = async (id: string) => {
-    if (!confirm('Are you sure you want to cancel this appointment?')) return;
+  // --- Cancel Modal Logic ---
+  let pendingCancelId: string | null = null;
+
+  (window as any).openCancelModal = (id: string) => {
+    pendingCancelId = id;
+    const modal = document.getElementById('cancel-modal');
+    const errorEl = document.getElementById('cancel-modal-error');
+    if (errorEl) errorEl.classList.add('hidden');
+    modal?.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  };
+
+  function closeModal() {
+    const modal = document.getElementById('cancel-modal');
+    modal?.classList.add('hidden');
+    document.body.style.overflow = '';
+    pendingCancelId = null;
+  }
+
+  document.getElementById('cancel-modal-back')?.addEventListener('click', closeModal);
+  document.getElementById('cancel-modal-overlay')?.addEventListener('click', closeModal);
+
+  document.getElementById('cancel-modal-confirm')?.addEventListener('click', async () => {
+    if (!pendingCancelId) return;
     
+    const confirmBtn = document.getElementById('cancel-modal-confirm') as HTMLButtonElement;
+    const errorEl = document.getElementById('cancel-modal-error');
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Cancelling...';
+    if (errorEl) errorEl.classList.add('hidden');
+
     const { error } = await supabase
       .from('appointments')
       .update({ status: 'cancelled' })
-      .eq('id', id);
+      .eq('id', pendingCancelId);
 
     if (error) {
       console.error('Cancel error:', error);
-      alert('Failed to cancel appointment. Please try again.');
+      if (errorEl) {
+        errorEl.textContent = 'Failed to cancel. Please try again.';
+        errorEl.classList.remove('hidden');
+      }
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'Yes, cancel appointment';
     } else {
+      closeModal();
       window.location.reload();
     }
-  };
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
 
   // Sign out
   document.getElementById('signout-btn')?.addEventListener('click', async () => {
