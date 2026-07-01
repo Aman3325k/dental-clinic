@@ -18,6 +18,15 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     </div>
   </div>
 
+  <!-- Delete Error Banner -->
+  <div id="delete-error" class="hidden mb-6 p-4 rounded-lg bg-red-50 border border-red-100 text-sm items-start gap-3 transition-opacity">
+    <span class="text-red-500 text-lg leading-none mt-0.5">⚠</span>
+    <div>
+      <p class="font-medium text-red-800">Failed to delete patient</p>
+      <p id="delete-error-msg" class="text-red-600 mt-0.5"></p>
+    </div>
+  </div>
+
   <!-- Table -->
   <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden overflow-x-auto">
     <table class="w-full border-collapse text-[0.8125rem]">
@@ -27,12 +36,39 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
           <th class="text-left py-3 px-4 text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wider">Phone</th>
           <th class="text-left py-3 px-4 text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wider">Date of Birth</th>
           <th class="text-left py-3 px-6 text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wider">Joined</th>
+          <th class="text-left py-3 px-6 text-[0.6875rem] font-semibold text-slate-400 uppercase tracking-wider">Actions</th>
         </tr>
       </thead>
       <tbody id="patients-tbody">
         <tr><td colspan="4" class="p-12 text-center text-slate-400 text-[0.8125rem]">Loading...</td></tr>
       </tbody>
     </table>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="delete-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div class="p-6">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+            <span class="text-red-600 text-xl font-bold">!</span>
+          </div>
+          <h3 class="font-['DM_Sans'] font-bold text-xl text-slate-900 m-0">Delete patient?</h3>
+        </div>
+        <p class="text-[0.9375rem] text-slate-500 leading-relaxed">
+          This will permanently delete this patient and ALL their appointments and records. This cannot be undone.
+        </p>
+      </div>
+      <div class="bg-slate-50 px-6 py-4 flex items-center justify-end gap-3 border-t border-slate-100">
+        <button onclick="closeDeleteModal()" class="px-4 py-2 text-sm font-medium text-slate-600 bg-transparent hover:bg-slate-200 rounded-lg transition-colors">
+          Go back
+        </button>
+        <button onclick="executeDelete()" class="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors shadow-sm">
+          Yes, delete patient
+        </button>
+      </div>
+    </div>
   </div>
 
 </AdminLayout>
@@ -77,7 +113,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   function renderPatients(patients: any[]) {
     const tbody = document.getElementById('patients-tbody')!;
     if (patients.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" class="p-12 text-center text-slate-400 text-[0.8125rem]">No patients found.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="5" class="p-12 text-center text-slate-400 text-[0.8125rem]">No patients found.</td></tr>';
       return;
     }
     tbody.innerHTML = patients.map((p: any) => {
@@ -94,6 +130,9 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
           <td class="py-3.5 px-4 text-slate-500 text-[0.8125rem]">${escapeHTML(p.phone || '—')}</td>
           <td class="py-3.5 px-4 font-mono text-slate-500 text-xs">${escapeHTML(p.date_of_birth || '—')}</td>
           <td class="py-3.5 px-6 font-mono text-slate-400 text-xs">${escapeHTML(p.created_at?.split('T')[0] || '—')}</td>
+          <td class="py-3.5 px-6">
+            <button onclick="confirmDeletePatient('${escapeHTML(p.id)}')" class="text-[0.6875rem] border border-red-200 text-red-600 py-1 px-2.5 rounded-md bg-white hover:bg-red-50 font-medium transition-colors">Delete</button>
+          </td>
         </tr>`;
     }).join('');
   }
@@ -101,5 +140,53 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   document.getElementById('search')?.addEventListener('input', (e) => {
     const q = (e.target as HTMLInputElement).value.toLowerCase();
     renderPatients(allPatients.filter((p: any) => p.full_name.toLowerCase().includes(q)));
+  });
+
+  let patientToDelete: string | null = null;
+
+  (window as any).confirmDeletePatient = (id: string) => {
+    patientToDelete = id;
+    const modal = document.getElementById('delete-modal');
+    if (modal) modal.classList.replace('hidden', 'flex');
+  };
+
+  (window as any).closeDeleteModal = () => {
+    patientToDelete = null;
+    const modal = document.getElementById('delete-modal');
+    if (modal) modal.classList.replace('flex', 'hidden');
+  };
+
+  (window as any).executeDelete = async () => {
+    if (!patientToDelete) return;
+    const id = patientToDelete;
+    (window as any).closeDeleteModal();
+    
+    const { error } = await supabase.from('patients').delete().eq('id', id);
+    
+    if (error) {
+      console.error('Delete error:', error);
+      const errBanner = document.getElementById('delete-error');
+      const errMsg = document.getElementById('delete-error-msg');
+      if (errBanner && errMsg) {
+        errMsg.textContent = error.message || 'Unknown error occurred.';
+        errBanner.classList.replace('hidden', 'flex');
+        setTimeout(() => errBanner.classList.replace('flex', 'hidden'), 5000);
+      }
+    } else {
+      allPatients = allPatients.filter((p: any) => p.id !== id);
+      const countEl = document.getElementById('total-count');
+      if (countEl) countEl.textContent = `${allPatients.length} patients`;
+      
+      // Re-apply search filter if any
+      const searchInput = document.getElementById('search') as HTMLInputElement;
+      const q = searchInput ? searchInput.value.toLowerCase() : '';
+      renderPatients(allPatients.filter((p: any) => p.full_name.toLowerCase().includes(q)));
+    }
+  };
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      (window as any).closeDeleteModal();
+    }
   });
 </script>
