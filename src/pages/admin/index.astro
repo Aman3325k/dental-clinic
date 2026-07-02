@@ -323,13 +323,19 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   }
 
   (window as any).toggleDropdown = (event: Event, id: string) => {
-    event.stopPropagation();
     const el = document.getElementById(id);
     const wasHidden = el?.classList.contains('hidden');
     // Hide all others
     document.querySelectorAll('.action-dropdown').forEach(d => d.classList.add('hidden'));
+    
+    const overlay = document.getElementById('dropdown-overlay');
     // Toggle targeted one
-    if (wasHidden) el?.classList.remove('hidden');
+    if (wasHidden) {
+      el?.classList.remove('hidden');
+      if (overlay) overlay.classList.remove('hidden');
+    } else {
+      if (overlay) overlay.classList.add('hidden');
+    }
   };
 
   (window as any).updateStatus = async (id: string, status: string) => {

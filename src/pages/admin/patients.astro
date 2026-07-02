@@ -201,11 +201,17 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   }
 
   (window as any).toggleDropdown = (event: Event, id: string) => {
-    event.stopPropagation();
     const el = document.getElementById(id);
     const wasHidden = el?.classList.contains('hidden');
     document.querySelectorAll('.action-dropdown').forEach(d => d.classList.add('hidden'));
-    if (wasHidden) el?.classList.remove('hidden');
+    
+    const overlay = document.getElementById('dropdown-overlay');
+    if (wasHidden) {
+      el?.classList.remove('hidden');
+      if (overlay) overlay.classList.remove('hidden');
+    } else {
+      if (overlay) overlay.classList.add('hidden');
+    }
   };
 
   document.getElementById('search')?.addEventListener('input', (e) => {
