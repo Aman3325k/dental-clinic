@@ -137,12 +137,12 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       return;
     }
 
-    const generateActions = (p: any) => `
+    const generateActions = (p: any, prefix: string) => `
       <div class="relative dropdown-container inline-block text-left">
-        <button onclick="toggleDropdown(event, 'action-${escapeHTML(p.id)}')" class="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors btn-press focus:outline-none focus:ring-2 focus:ring-sky-500">
+        <button onclick="toggleDropdown(event, 'action-${prefix}${escapeHTML(p.id)}')" class="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors btn-press focus:outline-none focus:ring-2 focus:ring-sky-500">
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/></svg>
         </button>
-        <div id="action-${escapeHTML(p.id)}" class="action-dropdown hidden absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-slate-100 overflow-hidden z-20 py-1">
+        <div id="action-${prefix}${escapeHTML(p.id)}" class="action-dropdown hidden absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-slate-100 overflow-hidden z-20 py-1">
           <button onclick="confirmDeletePatient('${escapeHTML(p.id)}')" class="w-full text-left px-4 py-2 text-[0.8125rem] font-medium text-red-600 hover:bg-red-50 transition-colors">Delete</button>
         </div>
       </div>
@@ -164,7 +164,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
           <td class="py-3.5 px-4 font-mono text-slate-500 text-xs">${escapeHTML(p.date_of_birth || '—')}</td>
           <td class="py-3.5 px-6 font-mono text-slate-400 text-xs">${escapeHTML(p.created_at?.split('T')[0] || '—')}</td>
           <td class="py-3.5 px-6 text-right">
-            ${generateActions(p)}
+            ${generateActions(p, 'desktop-')}
           </td>
         </tr>`;
     }).join('');
@@ -183,7 +183,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
                 <p class="text-xs text-slate-400 mt-0.5">${escapeHTML(p.phone || '—')}</p>
               </div>
             </div>
-            ${generateActions(p)}
+            ${generateActions(p, 'mobile-')}
           </div>
           <div class="grid grid-cols-2 gap-y-2">
             <div>

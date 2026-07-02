@@ -246,7 +246,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       completed: 'bg-slate-50/30 hover:bg-slate-100/50',
     };
 
-    const generateActions = (a: any) => {
+    const generateActions = (a: any, prefix: string) => {
       let menuItems = '';
       if (a.status === 'pending') {
         menuItems += `<button onclick="updateStatus('${escapeHTML(a.id)}','confirmed')" class="w-full text-left px-4 py-2 text-[0.8125rem] font-medium text-emerald-700 hover:bg-emerald-50 transition-colors">Confirm</button>`;
@@ -259,10 +259,10 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
       return `
         <div class="relative dropdown-container inline-block text-left">
-          <button onclick="toggleDropdown(event, 'action-${escapeHTML(a.id)}')" class="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors btn-press focus:outline-none focus:ring-2 focus:ring-sky-500">
+          <button onclick="toggleDropdown(event, 'action-${prefix}${escapeHTML(a.id)}')" class="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors btn-press focus:outline-none focus:ring-2 focus:ring-sky-500">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/></svg>
           </button>
-          <div id="action-${escapeHTML(a.id)}" class="action-dropdown hidden absolute right-0 top-full mt-1 w-36 bg-white rounded-lg shadow-lg border border-slate-100 overflow-hidden z-20 py-1">
+          <div id="action-${prefix}${escapeHTML(a.id)}" class="action-dropdown hidden absolute right-0 top-full mt-1 w-36 bg-white rounded-lg shadow-lg border border-slate-100 overflow-hidden z-20 py-1">
             ${menuItems}
           </div>
         </div>
@@ -285,7 +285,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
           <span class="${escapeHTML(statusStyles[a.status] || '')} rounded-md py-1 px-2.5 text-[0.6875rem] font-semibold capitalize inline-block">${escapeHTML(a.status)}</span>
         </td>
         <td class="py-3 px-6 whitespace-nowrap text-right">
-          ${generateActions(a)}
+          ${generateActions(a, 'desktop-')}
         </td>
       </tr>
       `;
@@ -301,7 +301,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
             <p class="font-medium text-slate-900 text-[0.9375rem]">${escapeHTML(a.patients?.full_name || '—')}</p>
             <p class="text-xs text-slate-400 mt-0.5">${escapeHTML(a.patients?.phone || '')}</p>
           </div>
-          ${generateActions(a)}
+          ${generateActions(a, 'mobile-')}
         </div>
         <div class="grid grid-cols-2 gap-y-2 mt-3">
           <div>
